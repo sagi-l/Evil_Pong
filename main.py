@@ -1,5 +1,6 @@
 import pygame
 from pygame.locals import *
+from time import sleep
 
 pygame.init()
 
@@ -20,16 +21,16 @@ player_score = 0
 fps = 60
 p1 = "P1: "
 winner = 0
-ai_speed = 5
+ai_speed = 1
 
 class Paddle():
     def __init__(self, x, y):
         self.x = x
         self.y = y
         # defining the size and width of the paddels:
-        self.rect = Rect(self.x, self.y, 15, 80)
+        self.rect = Rect(self.x, self.y, 10, 70)
         self.speed = 5
-        self.ai_speed = 5
+        self.ai_speed = 4
     def move(self):
         key = pygame.key.get_pressed()
         if key[pygame.K_UP] and self.rect.top > margin:
@@ -156,10 +157,13 @@ while run:
         winner = pong.move()
         if winner == 0:
             # draw ball
-            pong.draw()
+            pong.draw2()
+
             # move paddles
             player_paddle.move()
             cpu_paddle.ai()
+
+
         else:
             live_ball = False
             if winner == 1:
