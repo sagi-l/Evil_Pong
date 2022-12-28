@@ -16,6 +16,8 @@ screen = pygame.display.set_mode((screen_width, screen_height))
 pygame.display.set_caption("Evil Pong")
 
 # define game variable
+z = True
+zz = True
 live_ball = False
 margin = 50
 cpu_score = 0
@@ -27,8 +29,7 @@ ai_speed = 0
 speed_increase = 0
 num_list = [1, 2, 3, 4]
 w = [1 / 6, 1 / 6, 1 / 2, 1 / 24]
-z = True
-zz = True
+
 
 
 # if random_event == 1:
@@ -39,14 +40,23 @@ zz = True
 
 
 class Paddle():
+    color_1 = (200, 200, 200)
     def __init__(self, x, y):
+        self.color_notlost = (255, 62, 150)
+        self.color_lost = (255,0,0)
+        self.current_color = self.color_notlost
         self.x = x
         self.y = y
         # defining the size and width of the paddels:
         self.rect = Rect(self.x, self.y, 8, 50)
         self.speed = 5
         self.ai_speed = 4
+        self.color_1 = 200,200,200
+        self.is_game_lost = False
 
+    def set_game_lost(self):
+        self.current_color = self.color_lost
+        self.is_game_lost = False
     def move(self):
         key = pygame.key.get_pressed()
         if key[pygame.K_UP] and self.rect.top > margin:
@@ -63,8 +73,8 @@ class Paddle():
         if self.rect.centery > pong.rect.bottom and self.rect.top > margin:
             self.rect.move_ip(0, -1 * self.ai_speed)
 
-    def draw(self):
-        pygame.draw.rect(screen, light_grey, self.rect)
+    def draw(self,color1):
+        pygame.draw.rect(screen, color1, self.rect)
         if z == False:
             pygame.draw.rect(screen, red, self.rect)
 
@@ -73,6 +83,11 @@ class Paddle():
         if zz == False:
             pygame.draw.rect(screen, red, self.rect)
 
+
+"""
+class CPUPaddle(Paddle):
+    def draw(self)
+"""
 
 class Ball():
     def __init__(self, x, y):
@@ -169,8 +184,19 @@ def draw_text2(text, font, text_col, x, y, bg):
 
 
 run = True
+"""
+loggedInPLayer = readUserInput()
+with("sagie.leibman.txt") as f:
+    player_score_line = f.readline()
+    player_name, player_score = player_score_line.split(' ')
+    if loggedInPLayer == player_name:
+        scoreScreen.update_player_score(player_score)
+
+with(file("sagie.leibman.txt")) as f:
+    f.writeline(f'{player_name} {player_score}', line_index)
 
 # p1 = input("please enter your name: ")
+"""
 
 # main game loop
 while run:
@@ -181,7 +207,7 @@ while run:
     draw_text('Ball Speed: ' + str(abs(pong.speed_x)), font, light_grey, 255, 15)
 
     # drawing the two puddles:
-    player_paddle.draw()
+    player_paddle.draw(Paddle.color_1)
     cpu_paddle.draw2()
 
     if live_ball == True:
@@ -216,6 +242,7 @@ while run:
             draw_text('YOU SCORED!', font, violet, 390, 15)
             draw_text2('CLICK ANYWHERE TO START', font2, deep_sky, 160, screen_height // 2 - 6, bg)
         if winner == -1:
+
             draw_text('CPU SCORED!', font, violet, 110, 15)
             draw_text2('CLICK ANYWHERE TO START', font2, deep_sky, 160, screen_height // 2 - 6, bg)
 
@@ -244,4 +271,21 @@ while run:
 
     pygame.display.update()
 
+""" 
+
+while not game.finished():
+    CPUPaddle.updatePosition()
+    PlayerPaddle.updatePosition()
+
+    if random(10) == 1:
+        ball.update_speed(100)
+
+    if CPUPaddle.game_lost() or PlayerPaddle.game_lost():
+        CPUPaddle.update_score()
+        game.draw_summary()
+        sleep(3)
+    if keyboard.keypressed("q):
+        game.set_finished()
+    pygame.display.update()
+"""
 pygame.quit()
