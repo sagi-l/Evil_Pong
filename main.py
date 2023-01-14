@@ -4,6 +4,7 @@ from pygame.locals import *
 from time import sleep
 import random
 import pygame_gui
+import random_gen
 
 pygame.init()
 
@@ -43,9 +44,13 @@ paddel_size = False
 reverse_keys = False
 random_movment = False
 invisible = False
-ball_size = True
+ball_size = False
+ball_size2 = False
+static = False
+
 class Paddle:
     color_1 = (200, 200, 200)
+
     def __init__(self, x, y):
         self.reset(x, y)
 
@@ -58,6 +63,7 @@ class Paddle:
                 self.rect.move_ip(0, self.speed)
         else:
             key = pygame.key.get_pressed()
+
             if key[pygame.K_DOWN] and self.rect.top > margin:
                 self.rect.move_ip(0, -1 * self.speed)
             if key[pygame.K_UP] and self.rect.bottom < screen_height:
@@ -81,13 +87,10 @@ class Paddle:
         if invisible == True:
             pygame.draw.rect(screen, bg2, self.rect)
 
-
     def draw2(self):
         pygame.draw.rect(screen, light_grey, self.rect)
         if zz == False:
             pygame.draw.rect(screen, red, self.rect)
-
-
 
     def update(self):
         if self.rect.height >= self.max_size:
@@ -96,14 +99,14 @@ class Paddle:
             self.size_direction = 1
         self.rect.height += self.size_change * self.size_direction
 
-    def reset(self,x,y):
+    def reset(self, x, y):
 
         self.x = x
         self.y = y
         # defining the size and width of the paddels:
-        self.rect = Rect(self.x, self.y, 8, 50)
+        self.rect = Rect(self.x, self.y, 8, 60)
         self.speed = 5
-        self.ai_speed = 4
+        self.ai_speed = 5
         self.min_size = 10
         self.max_size = 60
         self.size_change = 1
@@ -118,6 +121,13 @@ class CPUPaddle(Paddle):
         self.size_change = 1
         self.size_direction = 1
 
+
+class static_paddle(Paddle):
+    def __init__(self, x, y):
+        super().__init__(x, y)
+        self.rect = Rect(self.x, self.y, 8, 100)
+
+
 class Ball():
     def __init__(self, x, y):
         self.reset(x, y)
@@ -130,8 +140,12 @@ class Ball():
         # check collision with bottom of the screen
         if self.rect.bottom > screen_height:
             self.speed_y *= -1
-        if self.rect.colliderect(player_paddle) or self.rect.colliderect(cpu_paddle) or self.rect.colliderect(cpu2):
+        if self.rect.colliderect(player_paddle) or self.rect.colliderect(static_paddle1) or self.rect.colliderect(
+                static_paddle2) or self.rect.colliderect(cpu2):
             self.speed_x *= -1
+        if static == False:
+            if self.rect.colliderect(static_paddle1) or self.rect.colliderect(static_paddle2):
+                self.speed_x *= -1
 
         # check for out of bounds
         if self.rect.left < 0:
@@ -153,14 +167,26 @@ class Ball():
     def draw(self):
         pygame.draw.circle(screen, light_grey, (self.rect.x + self.ball_rad, self.rect.y + self.ball_rad),
                            self.ball_rad)
+
     def draw2(self):
         pygame.draw.circle(screen, violet, (self.rect.x + self.ball_rad, self.rect.y + self.ball_rad), self.ball_rad)
 
     def ball_size(self):
-        self.ball_rad = random.randint(2,30)
+        if ball_size2 == True:
+            self.max_size = 100
+            self.min_size = 30
 
+        if self.ball_rad >= self.max_size:
+            self.size_direction = -1
+        elif self.ball_rad <= self.min_size:
+            self.size_direction = 1
+        self.ball_rad += self.size_change * self.size_direction
 
     def reset(self, x, y):
+        self.size_change = 1
+        self.size_direction = 1
+        self.max_size = 20
+        self.min_size = 1
         self.x = x
         self.y = y
         self.ball_rad = 6
@@ -170,9 +196,11 @@ class Ball():
         self.winner = 0  # 1 is the player and -1 is the CPU
         return self.winner
 
+
 # create puddles:
 player_paddle = Paddle(screen_width - 40, screen_height // 2 - 20)
-cpu_paddle = Paddle(25, screen_height // 2 - 20)
+static_paddle1 = static_paddle(300, screen_height // 10)
+static_paddle2 = static_paddle(300, screen_height - 100)
 cpu2 = CPUPaddle(25, screen_height // 2 - 20)
 # create ball:
 pong = Ball(screen_width - 60, screen_height // 2 + 15)
@@ -182,7 +210,7 @@ pong4 = Ball(screen_width - 80, screen_height // 2 + 15)
 
 # set clock
 Clock = pygame.time.Clock()
-
+timer = 0
 # define colors
 # background color:
 bg = (36, 36, 36)
@@ -200,6 +228,7 @@ violet2 = (230, 230, 50)
 font = pygame.font.SysFont('Helvetica', 18)
 font2 = pygame.font.SysFont('Helvetica', 24)
 
+
 def draw_board():
     # filling the screen with one color (bg)
     screen.fill((bg))
@@ -208,14 +237,17 @@ def draw_board():
     # drawing a line in the upper part of the screen
     pygame.draw.line(screen, light_grey, (0, margin), (screen_width, margin))
 
+
 # function for displaying text on screen
 def draw_text(text, font, text_col, x, y):
     img = font.render(text, True, text_col)
     screen.blit(img, (x, y))
 
+
 def draw_text2(text, font, text_col, x, y, bg):
     img = font.render(text, True, text_col, bg)
     screen.blit(img, (x, y))
+
 
 run = True
 """
@@ -234,6 +266,7 @@ with(file("sagie.leibman.txt")) as f:
 
 # main game loop
 while run:
+    timer += 1
     fpsClock.tick(fps)
     draw_board()
     draw_text('CPU: ' + str(cpu_score), font, light_grey, 30, 15)
@@ -244,8 +277,12 @@ while run:
     # drawing the two puddles:
     player_paddle.draw(Paddle.color_1)
     cpu2.draw2()
+    if timer == 400:
+        print("tick")
+        timer = 0
 
     if live_ball == True:
+        speed_increase += 1
         speed_increase += 1
         winner = pong.move()
         if ball_size == True:
@@ -254,6 +291,9 @@ while run:
             player_paddle.update()
         if ai_size == True:
             cpu2.update()
+        if static == True:
+            static_paddle1.draw2()
+            static_paddle2.draw2()
 
         if winner == 0:
             # draw ball
@@ -261,6 +301,7 @@ while run:
             # move paddles
             player_paddle.move()
             cpu2.ai()
+
         else:
             live_ball = False
             if winner == 1:
