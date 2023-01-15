@@ -1,10 +1,9 @@
 import math
 import pygame
 from pygame.locals import *
-from time import sleep
 import random
-import pygame_gui
-import random_gen
+import json
+from datetime import datetime
 
 pygame.init()
 
@@ -12,7 +11,6 @@ pygame.init()
 screen_width = 600
 screen_height = 500
 
-MANAGER = pygame_gui.UIManager((screen_width, screen_height))
 
 fpsClock = pygame.time.Clock()
 screen = pygame.display.set_mode((screen_width, screen_height))
@@ -48,59 +46,47 @@ ball_size2 = False
 static = False
 bla = False
 shit = False
-def random_events():
-    num_list = [1, 2, 3, 4, 5, 6, 7, 8, 9]
-    w = [1 / 6, 1 / 6, 1 / 6, 1 / 6, 1 / 6, 1 / 6, 1 / 6, 1 / 6, 1 / 6]
-    for i in range(1):
-        x = (random.choices(num_list, w, k=1))
-        # draw_text('RANDOM EVENT!!!', font, violet, 255, 15)
-        if x == [1]:
-            pong.ball_size()
-        elif x == [2]:
-            # randomly changing the ball size
-            print("2")
-            # samll ball
-            player_paddle.update()
-
-        elif x == [3]:
-            print("3")
-            # adding more evil balls
-            cpu2.update()
-            """"
-            pong2.draw2()
-            pong3.draw2()
-            pong4.draw2()
-            pong2.move()
-            pong3.move()
-            pong4.move()
-            """
-
-        elif x == [4]:
-            print("4")
-            invisible == True
 
 
-        elif x == [5]:
-            print("5")
-            # chaning the cpu paddle size
-            return 5
-        elif x == [6]:
-            print("6")
-            return 6
-        elif x == [7]:
-            print("7")
-            # reversing the player keys
-            return 7
+def write_score_to_json(player_score, cpu_score):
+    # get current date
+    date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
-        elif x == [8]:
-            print("8")
-            # making the player paddle invisible:
-            return 8
-        elif x == [9]:
-            print("9")
-            # adding static paddles in the middle of the screen
-            return 9
+    try:
+        with open("scores.json", "r") as score_file:
+            data = json.load(score_file)
+    except (FileNotFoundError, json.decoder.JSONDecodeError):
+        data = {"scores": []}
 
+    data["scores"].append({"date": date, "Player": player_score, "CPU": cpu_score})
+
+    with open("scores.json", "w") as score_file:
+        json.dump(data, score_file, separators=(",", ": "), indent=4)
+        score_file.write("\n")
+
+def random_event():
+    events = {
+        0: event_1,
+        1: event_2,
+        2: event_3
+    }
+
+    probabilities = [0.3, 0.5, 0.2]
+
+    event_num = random.choices(list(events.keys()), probabilities)[0]
+    event_func = events[event_num]
+    return event_func()
+
+def event_1():
+    print("Event 1 triggered!")
+    static = True
+    return static
+
+def event_2():
+    print("Event 2 triggered!")
+
+def event_3():
+    print("Event 3 triggered!")
 
 
 class Paddle:
@@ -148,7 +134,6 @@ class Paddle:
         pygame.draw.rect(screen, light_grey, self.rect)
         if zz == False:
             pygame.draw.rect(screen, red, self.rect)
-
     def update(self):
         if self.rect.height >= self.max_size:
             self.size_direction = -1
@@ -341,12 +326,13 @@ while run:
             ai_size = False
             reverse_keys = False
             random_movment = False
-
-            static = False
             if static == True:
+                print("its working!")
                 static_paddle1.draw2()
                 static_paddle2.draw2()
                 pong.static1()
+
+
 
             # move paddles
             player_paddle.move()
@@ -377,12 +363,20 @@ while run:
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
+            write_score_to_json(player_score, cpu_score)
             run = False
         if event.type == pygame.MOUSEBUTTONDOWN and live_ball == False:
             live_ball = True
+
+            if random_event() == 1:
+                event_1()
+                static = True
+
+
             pong.reset(screen_width - 300, screen_height // 2 + 5)
             z = True
             zz = True
+
     if speed_increase > 500:
         speed_increase = 0
         if pong.speed_x < 0:
