@@ -40,13 +40,68 @@ y = 5
 # random events triggers:
 player_size = False
 ai_size = False
-paddel_size = False
 reverse_keys = False
 random_movment = False
 invisible = False
 ball_size = False
 ball_size2 = False
 static = False
+bla = False
+shit = False
+def random_events():
+    num_list = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+    w = [1 / 6, 1 / 6, 1 / 6, 1 / 6, 1 / 6, 1 / 6, 1 / 6, 1 / 6, 1 / 6]
+    for i in range(1):
+        x = (random.choices(num_list, w, k=1))
+        # draw_text('RANDOM EVENT!!!', font, violet, 255, 15)
+        if x == [1]:
+            pong.ball_size()
+        elif x == [2]:
+            # randomly changing the ball size
+            print("2")
+            # samll ball
+            player_paddle.update()
+
+        elif x == [3]:
+            print("3")
+            # adding more evil balls
+            cpu2.update()
+            """"
+            pong2.draw2()
+            pong3.draw2()
+            pong4.draw2()
+            pong2.move()
+            pong3.move()
+            pong4.move()
+            """
+
+        elif x == [4]:
+            print("4")
+            invisible == True
+
+
+        elif x == [5]:
+            print("5")
+            # chaning the cpu paddle size
+            return 5
+        elif x == [6]:
+            print("6")
+            return 6
+        elif x == [7]:
+            print("7")
+            # reversing the player keys
+            return 7
+
+        elif x == [8]:
+            print("8")
+            # making the player paddle invisible:
+            return 8
+        elif x == [9]:
+            print("9")
+            # adding static paddles in the middle of the screen
+            return 9
+
+
 
 class Paddle:
     color_1 = (200, 200, 200)
@@ -63,7 +118,6 @@ class Paddle:
                 self.rect.move_ip(0, self.speed)
         else:
             key = pygame.key.get_pressed()
-
             if key[pygame.K_DOWN] and self.rect.top > margin:
                 self.rect.move_ip(0, -1 * self.speed)
             if key[pygame.K_UP] and self.rect.bottom < screen_height:
@@ -78,14 +132,17 @@ class Paddle:
         if self.rect.centery > pong.rect.bottom and self.rect.top > margin:
             self.rect.move_ip(0, -1 * self.ai_speed)
 
+
     def draw(self, color1):
-        pygame.draw.rect(screen, color1, self.rect)
-        # make the paddel red (when losing)
-        if z == False:
-            pygame.draw.rect(screen, red, self.rect)
-        # a random event that make the paddle almost invisible
         if invisible == True:
             pygame.draw.rect(screen, bg2, self.rect)
+        else:
+            pygame.draw.rect(screen, color1, self.rect)
+            # make the paddel red (when losing)
+            if z == False:
+                pygame.draw.rect(screen, red, self.rect)
+            # a random event that make the paddle almost invisible
+
 
     def draw2(self):
         pygame.draw.rect(screen, light_grey, self.rect)
@@ -129,6 +186,7 @@ class static_paddle(Paddle):
 
 
 class Ball():
+
     def __init__(self, x, y):
         self.reset(x, y)
 
@@ -140,12 +198,8 @@ class Ball():
         # check collision with bottom of the screen
         if self.rect.bottom > screen_height:
             self.speed_y *= -1
-        if self.rect.colliderect(player_paddle) or self.rect.colliderect(static_paddle1) or self.rect.colliderect(
-                static_paddle2) or self.rect.colliderect(cpu2):
+        if self.rect.colliderect(player_paddle) or self.rect.colliderect(cpu2):
             self.speed_x *= -1
-        if static == False:
-            if self.rect.colliderect(static_paddle1) or self.rect.colliderect(static_paddle2):
-                self.speed_x *= -1
 
         # check for out of bounds
         if self.rect.left < 0:
@@ -154,7 +208,6 @@ class Ball():
             self.winner = -1
 
         # update ball position
-
         if random_movment == True:
             self.rect.y += self.speed_y
             self.rect.x += self.speed_x * (y * math.cos(angle2) - 100 and x * math.sin(angle2) / 5)
@@ -163,7 +216,10 @@ class Ball():
             self.rect.y += self.speed_y
 
         return self.winner
+    def static1(self):
 
+        if self.rect.colliderect(static_paddle1) or self.rect.colliderect(static_paddle2):
+            self.speed_x *= -1
     def draw(self):
         pygame.draw.circle(screen, light_grey, (self.rect.x + self.ball_rad, self.rect.y + self.ball_rad),
                            self.ball_rad)
@@ -172,7 +228,7 @@ class Ball():
         pygame.draw.circle(screen, violet, (self.rect.x + self.ball_rad, self.rect.y + self.ball_rad), self.ball_rad)
 
     def ball_size(self):
-        if ball_size2 == True:
+        if ball_size2 == False:
             self.max_size = 100
             self.min_size = 30
 
@@ -248,36 +304,22 @@ def draw_text2(text, font, text_col, x, y, bg):
     img = font.render(text, True, text_col, bg)
     screen.blit(img, (x, y))
 
-
 run = True
-"""
-loggedInPLayer = readUserInput()
-with("sagie.leibman.txt") as f:
-    player_score_line = f.readline()
-    player_name, player_score = player_score_line.split(' ')
-    if loggedInPLayer == player_name:
-        scoreScreen.update_player_score(player_score)
-
-with(file("sagie.leibman.txt")) as f:
-    f.writeline(f'{player_name} {player_score}', line_index)
-
-# p1 = input("please enter your name: ")
-"""
-
 # main game loop
 while run:
+    angle1 += 0.01
+    angle2 += 0.01
     timer += 1
     fpsClock.tick(fps)
     draw_board()
     draw_text('CPU: ' + str(cpu_score), font, light_grey, 30, 15)
     draw_text(p1 + str(player_score), font, light_grey, screen_width - 70, 15)
     draw_text('Ball Speed: ' + str(abs(pong.speed_x)), font, light_grey, 255, 15)
-    angle1 += 0.01
-    angle2 += 0.01
     # drawing the two puddles:
     player_paddle.draw(Paddle.color_1)
     cpu2.draw2()
-    if timer == 400:
+
+    if timer == 100:
         print("tick")
         timer = 0
 
@@ -285,19 +327,27 @@ while run:
         speed_increase += 1
         speed_increase += 1
         winner = pong.move()
-        if ball_size == True:
-            pong.ball_size()
-        if player_size == True:
-            player_paddle.update()
-        if ai_size == True:
-            cpu2.update()
-        if static == True:
-            static_paddle1.draw2()
-            static_paddle2.draw2()
 
         if winner == 0:
-            # draw ball
             pong.draw2()
+            # draw ball
+
+            ball_size = False
+            if ball_size==True:
+                pong.ball_size()
+            shit = False
+            if shit == True:
+                player_paddle.update()
+            ai_size = False
+            reverse_keys = False
+            random_movment = False
+
+            static = False
+            if static == True:
+                static_paddle1.draw2()
+                static_paddle2.draw2()
+                pong.static1()
+
             # move paddles
             player_paddle.move()
             cpu2.ai()
@@ -347,20 +397,4 @@ while run:
 
     pygame.display.update()
 
-""" 
 
-while not game.finished():
-    CPUPaddle.updatePosition()
-    PlayerPaddle.updatePosition()
-
-    if random(10) == 1:
-        ball.update_speed(100)
-
-    if CPUPaddle.game_lost() or PlayerPaddle.game_lost():
-        CPUPaddle.update_score()
-        game.draw_summary()
-        sleep(3)
-    if keyboard.keypressed("q):
-        game.set_finished()
-    pygame.display.update()
-"""
