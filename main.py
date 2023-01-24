@@ -36,6 +36,7 @@ x = 5
 y = 5
 
 # random events triggers:
+many_balls = False
 player_size = False
 ai_size = False
 reverse_keys = False
@@ -65,28 +66,14 @@ def write_score_to_json(player_score, cpu_score):
         score_file.write("\n")
 
 def random_event():
-    events = {
-        0: event_1,
-        1: event_2,
-        2: event_3
-    }
+    num_list = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+    w = [1, 6 / 1, 2 / 6, 1 / 6, 1 / 6, 1 / 6, 1 / 6, 1 / 6, 1 / 6]
+    for i in range(1):
+        choice = (random.choices(num_list, w, k=1))
+    print(choice)
+    return(choice)
 
-    probabilities = [0.3, 0.5, 0.2]
 
-    event_num = random.choices(list(events.keys()), probabilities)[0]
-    event_func = events[event_num]
-    return event_func()
-
-def event_1():
-    print("Event 1 triggered!")
-    static = True
-    return static
-
-def event_2():
-    print("Event 2 triggered!")
-
-def event_3():
-    print("Event 3 triggered!")
 
 
 class Paddle:
@@ -208,7 +195,6 @@ class Ball():
     def draw(self):
         pygame.draw.circle(screen, light_grey, (self.rect.x + self.ball_rad, self.rect.y + self.ball_rad),
                            self.ball_rad)
-
     def draw2(self):
         pygame.draw.circle(screen, violet, (self.rect.x + self.ball_rad, self.rect.y + self.ball_rad), self.ball_rad)
 
@@ -292,6 +278,7 @@ def draw_text2(text, font, text_col, x, y, bg):
 run = True
 # main game loop
 while run:
+
     angle1 += 0.01
     angle2 += 0.01
     timer += 1
@@ -304,10 +291,6 @@ while run:
     player_paddle.draw(Paddle.color_1)
     cpu2.draw2()
 
-    if timer == 100:
-        print("tick")
-        timer = 0
-
     if live_ball == True:
         speed_increase += 1
         speed_increase += 1
@@ -317,22 +300,30 @@ while run:
             pong.draw2()
             # draw ball
 
-            ball_size = False
+            if many_balls == True:
+                pong2.draw2()
+                pong2.move()
+                pong3.draw2()
+                pong3.move()
+                pong4.draw2()
+                pong4.move()
+
             if ball_size==True:
                 pong.ball_size()
-            shit = False
+
             if shit == True:
                 player_paddle.update()
-            ai_size = False
-            reverse_keys = False
-            random_movment = False
+            else:
+                player_paddle.draw(Paddle.color_1)
+
+            if ai_size == True:
+                cpu2.update()
+
+
             if static == True:
-                print("its working!")
                 static_paddle1.draw2()
                 static_paddle2.draw2()
                 pong.static1()
-
-
 
             # move paddles
             player_paddle.move()
@@ -366,16 +357,81 @@ while run:
             write_score_to_json(player_score, cpu_score)
             run = False
         if event.type == pygame.MOUSEBUTTONDOWN and live_ball == False:
-            live_ball = True
 
-            if random_event() == 1:
-                event_1()
+            live_ball = True
+            # resetting events triggers everytime the game starts
+            many_balls = False
+            player_size = False
+            ai_size = False
+            reverse_keys = False
+            random_movment = False
+            invisible = False
+            ball_size = False
+            ball_size2 = False
+            static = False
+            bla = False
+            shit = False
+            # random event generator
+            num_list = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+            w = [1 / 6, 1 / 2, 1 / 6, 1 / 6, 1 / 6, 1 / 6, 1 / 6, 1 / 6, 1 / 6, 1 / 6, 1 / 6, 1 / 6]
+            for i in range(1):
+                choice = (random.choices(num_list, w, k=1))
+
+            if choice == [1]:
+                print(choice)
                 static = True
+            else:
+
+                # I need to try and pass the whole thing as a list or dict
+                static= False
+            if choice == [2]:
+                print(choice)
+                random_movment = True
+
+            if choice == [3]:
+                invisible = True
+                print(choice)
+            else:
+                invisible = False
+            if choice == [4]:
+                ball_size = True
+                print (choice)
+            if choice == [5]:
+                ball_size2 = True
+                print (choice)
+            if choice == [6]:
+                shit = True
+                print(choice)
+            if choice == [7]:
+                reverse_keys = True
+                print(choice)
+            if choice == [8]:
+                ai_size = True
+                print(choice)
+            if choice == [9]:
+                many_balls = True
+                print(choice)
+            # mixed events:
+            if choice == [10]:
+                ball_size = True
+                reverse_keys = True
+                print(choice)
+            if choice == [11]:
+                shit = True
+                invisible = True
+                print(choice)
+            if choice == [12]:
+                many_balls = True
+                ai_size = True
+                random_movment = True
+                print(choice)
+
 
 
             pong.reset(screen_width - 300, screen_height // 2 + 5)
             z = True
             zz = True
+
 
     if speed_increase > 500:
         speed_increase = 0
