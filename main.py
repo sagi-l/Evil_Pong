@@ -28,27 +28,33 @@ p1 = "P1: "
 winner = 0
 ai_speed = 0
 speed_increase = 0
-num_list = [1, 2, 3, 4]
-w = [1 / 6, 1 / 6, 1 / 2, 1 / 24]
+
 angle1 = 0
 angle2 = 0
 x = 5
 y = 5
 
-# random events triggers:
-many_balls = False
-player_size = False
-ai_size = False
-reverse_keys = False
-random_movment = False
-invisible = False
-ball_size = False
-ball_size2 = False
-static = False
-bla = False
-shit = False
+
+# setting up random events triggers
+class GameState():
+    def __init__(self, player_size = False, many_balls = False, ai_size = False, reverse_keys =  False,
+                 random_movement = False, invisible = False, ball_size = False,
+                 ball_size2 = False, static = False):
+        self.many_balls = many_balls
+        self.player_size = player_size
+        self.ai_size = ai_size
+        self.reverse_keys = reverse_keys
+        self.random_movement = random_movement
+        self.invisible = invisible
+        self.ball_size = ball_size
+        self.ball_size2 = ball_size2
+        self.static = static
+
+# initiating GameState class
+gs = GameState()
 
 
+#function to write the scors to a file
 def write_score_to_json(player_score, cpu_score):
     # get current date
     date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -65,17 +71,6 @@ def write_score_to_json(player_score, cpu_score):
         json.dump(data, score_file, separators=(",", ": "), indent=4)
         score_file.write("\n")
 
-def random_event():
-    num_list = [1, 2, 3, 4, 5, 6, 7, 8, 9]
-    w = [1, 6 / 1, 2 / 6, 1 / 6, 1 / 6, 1 / 6, 1 / 6, 1 / 6, 1 / 6]
-    for i in range(1):
-        choice = (random.choices(num_list, w, k=1))
-    print(choice)
-    return(choice)
-
-
-
-
 class Paddle:
     color_1 = (200, 200, 200)
 
@@ -83,7 +78,7 @@ class Paddle:
         self.reset(x, y)
 
     def move(self):
-        if reverse_keys == False:
+        if gs.reverse_keys == False:
             key = pygame.key.get_pressed()
             if key[pygame.K_UP] and self.rect.top > margin:
                 self.rect.move_ip(0, -1 * self.speed)
@@ -107,7 +102,7 @@ class Paddle:
 
 
     def draw(self, color1):
-        if invisible == True:
+        if gs.invisible == True:
             pygame.draw.rect(screen, bg2, self.rect)
         else:
             pygame.draw.rect(screen, color1, self.rect)
@@ -116,20 +111,21 @@ class Paddle:
                 pygame.draw.rect(screen, red, self.rect)
             # a random event that make the paddle almost invisible
 
-
     def draw2(self):
         pygame.draw.rect(screen, light_grey, self.rect)
         if zz == False:
             pygame.draw.rect(screen, red, self.rect)
+
     def update(self):
+
         if self.rect.height >= self.max_size:
             self.size_direction = -1
         elif self.rect.height <= self.min_size:
             self.size_direction = 1
         self.rect.height += self.size_change * self.size_direction
 
-    def reset(self, x, y):
 
+    def reset(self, x, y):
         self.x = x
         self.y = y
         # defining the size and width of the paddels:
@@ -140,15 +136,9 @@ class Paddle:
         self.max_size = 60
         self.size_change = 1
         self.size_direction = 1
-
-
-class CPUPaddle(Paddle):
-    def __init__(self, x, y):
-        super().__init__(x, y)
-        self.min_size = 50
-        self.max_size = 180
-        self.size_change = 1
-        self.size_direction = 1
+        if gs.ai_size == True:
+            self.min_size = 50
+            self.max_size = 180
 
 
 class static_paddle(Paddle):
@@ -179,8 +169,8 @@ class Ball():
         if self.rect.left > screen_width:
             self.winner = -1
 
-        # update ball position
-        if random_movment == True:
+        # update ball position and activate random movement
+        if gs.random_movement == True:
             self.rect.y += self.speed_y
             self.rect.x += self.speed_x * (y * math.cos(angle2) - 100 and x * math.sin(angle2) / 5)
         else:
@@ -199,9 +189,17 @@ class Ball():
         pygame.draw.circle(screen, violet, (self.rect.x + self.ball_rad, self.rect.y + self.ball_rad), self.ball_rad)
 
     def ball_size(self):
-        if ball_size2 == False:
-            self.max_size = 100
-            self.min_size = 30
+
+        self.max_size = 100
+        self.min_size = 30
+
+        if self.ball_rad >= self.max_size:
+            self.size_direction = -1
+        elif self.ball_rad <= self.min_size:
+            self.size_direction = 1
+        self.ball_rad += self.size_change * self.size_direction
+
+    def ball_size2(self):
 
         if self.ball_rad >= self.max_size:
             self.size_direction = -1
@@ -223,12 +221,11 @@ class Ball():
         self.winner = 0  # 1 is the player and -1 is the CPU
         return self.winner
 
-
 # create puddles:
 player_paddle = Paddle(screen_width - 40, screen_height // 2 - 20)
 static_paddle1 = static_paddle(300, screen_height // 10)
 static_paddle2 = static_paddle(300, screen_height - 100)
-cpu2 = CPUPaddle(25, screen_height // 2 - 20)
+cpu2 = Paddle(25, screen_height // 2 - 20)
 # create ball:
 pong = Ball(screen_width - 60, screen_height // 2 + 15)
 pong2 = Ball(screen_width - 80, screen_height // 2 + 15)
@@ -293,14 +290,15 @@ while run:
 
     if live_ball == True:
         speed_increase += 1
-        speed_increase += 1
+
         winner = pong.move()
 
         if winner == 0:
             pong.draw2()
             # draw ball
 
-            if many_balls == True:
+            #adding more balls random event
+            if gs.many_balls == True:
                 pong2.draw2()
                 pong2.move()
                 pong3.draw2()
@@ -308,19 +306,20 @@ while run:
                 pong4.draw2()
                 pong4.move()
 
-            if ball_size==True:
-                pong.ball_size()
-
-            if shit == True:
+            # changing the player paddle size
+            if gs.player_size == True:
                 player_paddle.update()
-            else:
-                player_paddle.draw(Paddle.color_1)
-
-            if ai_size == True:
+            # changing the ball size #1
+            if gs.ball_size == True:
+                pong.ball_size()
+            # changing the ball size#2
+            if gs.ball_size2 == True:
+                pong.ball_size2()
+            # changing the cpu_paddle size
+            if gs.ai_size == True:
                 cpu2.update()
-
-
-            if static == True:
+            # adding static paddles (as walls)
+            if gs.static == True:
                 static_paddle1.draw2()
                 static_paddle2.draw2()
                 pong.static1()
@@ -349,86 +348,72 @@ while run:
             draw_text('CPU SCORED!', font, violet, 110, 15)
             draw_text2('CLICK ANYWHERE TO START', font2, deep_sky, 160, screen_height // 2 - 6, bg)
 
-    # to create a second ball (pong) with a diffrent color (i've creating a seconed draw method at the Ball class:
-    # pong2.draw2()
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             write_score_to_json(player_score, cpu_score)
             run = False
         if event.type == pygame.MOUSEBUTTONDOWN and live_ball == False:
-
             live_ball = True
-            # resetting events triggers everytime the game starts
-            many_balls = False
-            player_size = False
-            ai_size = False
-            reverse_keys = False
-            random_movment = False
-            invisible = False
-            ball_size = False
-            ball_size2 = False
-            static = False
-            bla = False
-            shit = False
+
+            # resetting events triggers every time the game start
+            gs = GameState()
+
             # random event generator
             num_list = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
-            w = [1 / 6, 1 / 2, 1 / 6, 1 / 6, 1 / 6, 1 / 6, 1 / 6, 1 / 6, 1 / 6, 1 / 6, 1 / 6, 1 / 6]
+            w = [1 / 6, 1 / 6, 1 / 6, 1 / 6, 1 / 6, 1 / 6, 1 / 6, 1 / 6, 1 / 6, 1 / 6, 1 / 6, 1 / 6]
             for i in range(1):
                 choice = (random.choices(num_list, w, k=1))
 
             if choice == [1]:
                 print(choice)
-                static = True
-            else:
-
-                # I need to try and pass the whole thing as a list or dict
-                static= False
+                gs.static = True
             if choice == [2]:
                 print(choice)
-                random_movment = True
-
+                gs.random_movement = True
             if choice == [3]:
-                invisible = True
+                gs.invisible = True
                 print(choice)
-            else:
-                invisible = False
             if choice == [4]:
-                ball_size = True
-                print (choice)
+                gs.ball_size2 = True
+                print(choice)
             if choice == [5]:
-                ball_size2 = True
-                print (choice)
+                gs.ball_size = True
+                print(choice)
             if choice == [6]:
-                shit = True
+                gs.ai_size = True
                 print(choice)
             if choice == [7]:
-                reverse_keys = True
+                gs.reverse_keys = True
                 print(choice)
             if choice == [8]:
-                ai_size = True
+                gs.many_balls = True
                 print(choice)
             if choice == [9]:
-                many_balls = True
+                gs.player_size = True
                 print(choice)
             # mixed events:
             if choice == [10]:
-                ball_size = True
-                reverse_keys = True
+                gs.ball_size = True
+                gs.reverse_keys = True
                 print(choice)
             if choice == [11]:
-                shit = True
-                invisible = True
+                gs.ball_size2 = True
+                gs.invisible = True
                 print(choice)
             if choice == [12]:
-                many_balls = True
-                ai_size = True
-                random_movment = True
+                gs.ai_size = True
+                gs.static = True
+                gs.random_movement = True
                 print(choice)
 
-
-
+            player_paddle.reset(screen_width - 40, screen_height // 2 - 20)
+            cpu2.reset(25, screen_height // 2 - 20)
             pong.reset(screen_width - 300, screen_height // 2 + 5)
+            pong2.reset(screen_width - 300, screen_height // 2 + 5)
+            pong3.reset(screen_width - 300, screen_height // 2 + 5)
+            pong4.reset(screen_width - 300, screen_height // 2 + 5)
+
             z = True
             zz = True
 
@@ -446,5 +431,3 @@ while run:
             pong.speed_y += 1
 
     pygame.display.update()
-
-
