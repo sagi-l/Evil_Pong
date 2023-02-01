@@ -2,13 +2,14 @@ import math
 import sys
 import time
 import pygame
+import pygame.time
 from pygame.locals import *
 import random
 import json
 from datetime import datetime
-
+from menu import *
 pygame.init()
-
+game_paused = False
 # set up the game window
 screen_width = 600
 screen_height = 500
@@ -37,16 +38,12 @@ angle2 = 0
 x = 5
 y = 5
 
-class GameFlow:
-    def __init__(self):
-        self.state = 'main_game'
-    def main_game(self):
-        pass
 # setting up random events triggers
 class GameState:
     def __init__(self, player_size = False, many_balls = False, ai_size = False, reverse_keys =  False,
                  random_movement = False, invisible = False, ball_size = False,
                  ball_size2 = False, static = False, difficulty = 3):
+
         self.many_balls = many_balls
         self.player_size = player_size
         self.ai_size = ai_size
@@ -365,15 +362,25 @@ while run:
             draw_text2('CLICK ANYWHERE TO START', font2, deep_sky, 160, screen_height // 2 - 6, bg)
 
 
+
     for event in pygame.event.get():
+
         if event.type == pygame.QUIT:
             write_score_to_json(player_score, cpu_score)
             run = False
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_ESCAPE:
                 run = False
-        if event.type == pygame.MOUSEBUTTONDOWN and live_ball == False:
+            if event.key == pygame.K_p:
+                game_paused = True
+                run2(run,game_paused==True)
+                print(game_paused)
+
+
+
+    if event.type == pygame.MOUSEBUTTONDOWN and live_ball == False:
             live_ball = True
+
 
             # resetting events triggers every time the game start
             gs = GameState()
