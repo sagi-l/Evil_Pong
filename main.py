@@ -1,4 +1,6 @@
 import math
+import sys
+import time
 import pygame
 from pygame.locals import *
 import random
@@ -17,6 +19,7 @@ screen = pygame.display.set_mode((screen_width, screen_height))
 pygame.display.set_caption("Evil Pong")
 
 # define game variable
+choice = None
 z = True
 zz = True
 live_ball = False
@@ -28,18 +31,22 @@ p1 = "P1: "
 winner = 0
 ai_speed = 0
 speed_increase = 0
-
+random_num = [0]
 angle1 = 0
 angle2 = 0
 x = 5
 y = 5
 
-
+class GameFlow:
+    def __init__(self):
+        self.state = 'main_game'
+    def main_game(self):
+        pass
 # setting up random events triggers
-class GameState():
+class GameState:
     def __init__(self, player_size = False, many_balls = False, ai_size = False, reverse_keys =  False,
                  random_movement = False, invisible = False, ball_size = False,
-                 ball_size2 = False, static = False):
+                 ball_size2 = False, static = False, difficulty = 3):
         self.many_balls = many_balls
         self.player_size = player_size
         self.ai_size = ai_size
@@ -49,6 +56,8 @@ class GameState():
         self.ball_size = ball_size
         self.ball_size2 = ball_size2
         self.static = static
+        # game difficulty
+        self.difficulty = difficulty
 
 # initiating GameState class
 gs = GameState()
@@ -58,7 +67,6 @@ gs = GameState()
 def write_score_to_json(player_score, cpu_score):
     # get current date
     date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-
     try:
         with open("scores.json", "r") as score_file:
             data = json.load(score_file)
@@ -272,6 +280,14 @@ def draw_text2(text, font, text_col, x, y, bg):
     img = font.render(text, True, text_col, bg)
     screen.blit(img, (x, y))
 
+# random events generator
+def random_gen(random_num):
+    num_list = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+    w = [1 / 6, 1 / 6, 1 / 6, 1 / 6, 1 / 6, 1 / 6, 1 / 6, 1 / 6, 1 / 6, 1 / 6, 1 / 6, 1 / 6]
+    for i in range(1):
+        choice = (random.choices(num_list, w, k=1))
+    return choice
+
 run = True
 # main game loop
 while run:
@@ -353,17 +369,32 @@ while run:
         if event.type == pygame.QUIT:
             write_score_to_json(player_score, cpu_score)
             run = False
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_ESCAPE:
+                run = False
         if event.type == pygame.MOUSEBUTTONDOWN and live_ball == False:
             live_ball = True
 
             # resetting events triggers every time the game start
             gs = GameState()
 
-            # random event generator
-            num_list = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
-            w = [1 / 6, 1 / 6, 1 / 6, 1 / 6, 1 / 6, 1 / 6, 1 / 6, 1 / 6, 1 / 6, 1 / 6, 1 / 6, 1 / 6]
-            for i in range(1):
-                choice = (random.choices(num_list, w, k=1))
+            if gs.difficulty == 1:
+                pass
+            elif gs.difficulty == 2:
+                choice2 = random_gen(random_num)
+                print(f"first random: {choice2}")
+                if choice2 == [2] or choice2 == [4] or choice2 == [6]:
+                    choice = random_gen(random_num)
+                else:
+                    choice = None
+            elif gs.difficulty == 3:
+                choice2 = random_gen(random_num)
+                print(f"first random: {choice2}")
+                if choice2 == [1] or choice2 == [3] or choice2 == [5] or choice2 == [7] \
+                        or choice2 == [9] or choice2 == [11]:
+                    choice = random_gen(random_num)
+                else:
+                    choice = None
 
             if choice == [1]:
                 print(choice)

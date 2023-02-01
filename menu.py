@@ -14,6 +14,9 @@ def draw_text(text,font, text_col, x,y):
 
 #define fonts
 font =  pygame.font.SysFont('Helvetica', 24)
+font2 = pygame.font.SysFont('Helvetica', 90)
+
+
 
 # define colors
 txt_col = (255, 62, 150)
@@ -30,7 +33,13 @@ while run:
         draw_text("Game pasued,  press O to continue ", font, txt_col, 150, 220)
         #display menu
     else:
-        draw_text("Press P to pause", font, txt_col, 230, 220)
+        #draw_text("Press P to pause", font, txt_col, 230, 220)
+        draw_text("EVIL PONG", font2, txt_col, 105, 20)
+        draw_text("Start", font, txt_col, 270, 200)
+        draw_text("Options", font, txt_col, 260, 240)
+        draw_text("Scores", font, txt_col, 260, 280)
+        draw_text("Exit", font, txt_col, 275, 320)
+
 
 
     for event in pygame.event.get():
