@@ -58,10 +58,11 @@ class GameState:
 
 # initiating GameState class
 gs = GameState()
-
+difficulty = gs.difficulty
 
 #function to write the scors to a file
-def write_score_to_json(player_score, cpu_score):
+def write_score_to_json(player_score, cpu_score, difficulty):
+
     # get current date
     date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     try:
@@ -70,7 +71,7 @@ def write_score_to_json(player_score, cpu_score):
     except (FileNotFoundError, json.decoder.JSONDecodeError):
         data = {"scores": []}
 
-    data["scores"].append({"date": date, "Player": player_score, "CPU": cpu_score})
+    data["scores"].append({"date": date, "Player": player_score, "CPU": cpu_score, "difficulty": difficulty})
 
     with open("scores.json", "w") as score_file:
         json.dump(data, score_file, separators=(",", ": "), indent=4)
@@ -366,10 +367,11 @@ while run:
     for event in pygame.event.get():
 
         if event.type == pygame.QUIT:
-            write_score_to_json(player_score, cpu_score)
+            write_score_to_json(player_score, cpu_score, difficulty)
             run = False
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_ESCAPE:
+                write_score_to_json(player_score, cpu_score, difficulty)
                 run = False
             if event.key == pygame.K_p:
                 game_paused = True
