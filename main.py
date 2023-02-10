@@ -1,19 +1,17 @@
+import json
 import math
-import sys
-import time
-import pygame
+import random
+from datetime import datetime
 import pygame.time
 from pygame.locals import *
-import random
-import json
-from datetime import datetime
 from menu import *
+from GameStat import *
+# initiating pygame
 pygame.init()
-game_paused = False
+
 # set up the game window
 screen_width = 600
 screen_height = 500
-
 
 fpsClock = pygame.time.Clock()
 screen = pygame.display.set_mode((screen_width, screen_height))
@@ -39,24 +37,9 @@ x = 5
 y = 5
 
 # setting up random events triggers
-class GameState:
-    def __init__(self, player_size = False, many_balls = False, ai_size = False, reverse_keys =  False,
-                 random_movement = False, invisible = False, ball_size = False,
-                 ball_size2 = False, static = False, difficulty = 3):
-
-        self.many_balls = many_balls
-        self.player_size = player_size
-        self.ai_size = ai_size
-        self.reverse_keys = reverse_keys
-        self.random_movement = random_movement
-        self.invisible = invisible
-        self.ball_size = ball_size
-        self.ball_size2 = ball_size2
-        self.static = static
-        # game difficulty
-        self.difficulty = difficulty
 
 # initiating GameState class
+
 gs = GameState()
 difficulty = gs.difficulty
 
@@ -146,13 +129,10 @@ class Paddle:
             self.min_size = 50
             self.max_size = 180
 
-
 class static_paddle(Paddle):
     def __init__(self, x, y):
         super().__init__(x, y)
         self.rect = Rect(self.x, self.y, 8, 100)
-
-
 class Ball():
 
     def __init__(self, x, y):
@@ -363,7 +343,6 @@ while run:
             draw_text2('CLICK ANYWHERE TO START', font2, deep_sky, 160, screen_height // 2 - 6, bg)
 
 
-
     for event in pygame.event.get():
 
         if event.type == pygame.QUIT:
@@ -379,15 +358,16 @@ while run:
                 print(game_paused)
 
 
-
     if event.type == pygame.MOUSEBUTTONDOWN and live_ball == False:
             live_ball = True
-
+            print("test2 = ", gs2.test)
 
             # resetting events triggers every time the game start
             gs = GameState()
+            print("test3 = ", gs2.test)
 
             if gs.difficulty == 1:
+                print (gs.difficulty)
                 pass
             elif gs.difficulty == 2:
                 choice2 = random_gen(random_num)
@@ -404,6 +384,8 @@ while run:
                     choice = random_gen(random_num)
                 else:
                     choice = None
+            else:
+                pass
 
             if choice == [1]:
                 print(choice)
