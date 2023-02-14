@@ -6,45 +6,68 @@ from pygame.locals import *
 from menu import *
 from GameStat import *
 
+
 # initiating pygame
 pygame.init()
-
-# set up the game window
-screen_width = 600
-screen_height = 500
-
-fpsClock = pygame.time.Clock()
-screen = pygame.display.set_mode((screen_width, screen_height))
 pygame.display.set_caption("Evil Pong")
 
-# define game variable
-choice = None
-z = True
-zz = True
-live_ball = False
-margin = 50
-cpu_score = 0
-player_score = 0
-fps = 60
-p1 = "P1: "
-winner = 0
-ai_speed = 0
-speed_increase = 0
-random_num = [0]
-angle1 = 0
-angle2 = 0
-x = 5
-y = 5
 
-# setting up random events triggers
+# define game variable
+class GeneralMainVariables:
+    # set up the game window
+    screen_width = 600
+    screen_height = 500
+    screen = pygame.display.set_mode((screen_width, screen_height))
+    angle1 = 0
+    angle2 = 0
+    p1 = "P1: "
+    cpu_score = 0
+    player_score = 0
+    z = True
+    zz = True
+    live_ball = False
+    margin = 50
+    fps = 60
+    winner = 0
+    speed_increase = 0
+    random_num = [0]
+    x = 5
+    y = 5
+
+    # set clock
+    Clock = pygame.time.Clock()
+    timer = 0
+    fpsClock = pygame.time.Clock()
+
+    # define colors
+    # background color:
+    bg = (36, 36, 36)
+    bg2 = (38, 38, 38)
+
+    # objects colors:
+    light_grey = (200, 200, 200)
+
+    # more colors
+    deep_sky = (0, 191, 255)
+    red = (238, 44, 44)
+    violet = (255, 62, 150)
+    violet2 = (230, 230, 50)
+
+    # define font:
+    font = pygame.font.SysFont('Helvetica', 18)
+    font2 = pygame.font.SysFont('Helvetica', 24)
+
+
 
 # initiating GameState class
-
+gmv = GeneralMainVariables
 gs = GameState()
 difficulty = gs2.difficulty
+random_num = gmv.random_num
+bg = gmv.bg
+bg2 = gmv.bg2
 
-
-# function to write the scors to a file
+# function to write the scores to a file
 def write_score_to_json(player_score, cpu_score, difficulty):
     # get current date
     date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -54,7 +77,7 @@ def write_score_to_json(player_score, cpu_score, difficulty):
     except (FileNotFoundError, json.decoder.JSONDecodeError):
         data = {"scores": []}
 
-    data["scores"].append({"date": date, "Player": player_score, "CPU": cpu_score, "difficulty": difficulty})
+    data["scores"].append({"date": date, "Player": gmv.player_score, "CPU": gmv.cpu_score, "difficulty": difficulty})
 
     with open("scores.json", "w") as score_file:
         json.dump(data, score_file, separators=(",", ": "), indent=4)
@@ -70,40 +93,40 @@ class Paddle:
     def move(self):
         if not gs.reverse_keys:
             key = pygame.key.get_pressed()
-            if key[pygame.K_UP] and self.rect.top > margin:
+            if key[pygame.K_UP] and self.rect.top > gmv.margin:
                 self.rect.move_ip(0, -1 * self.speed)
-            if key[pygame.K_DOWN] and self.rect.bottom < screen_height:
+            if key[pygame.K_DOWN] and self.rect.bottom < gmv.screen_height:
                 self.rect.move_ip(0, self.speed)
         else:
             key = pygame.key.get_pressed()
-            if key[pygame.K_DOWN] and self.rect.top > margin:
+            if key[pygame.K_DOWN] and self.rect.top > gmv.margin:
                 self.rect.move_ip(0, -1 * self.speed)
-            if key[pygame.K_UP] and self.rect.bottom < screen_height:
+            if key[pygame.K_UP] and self.rect.bottom < gmv.screen_height:
                 self.rect.move_ip(0, self.speed)
 
     def ai(self):
         # ai to move the paddle automatically
         # move down
-        if self.rect.centery < pong.rect.top and self.rect.bottom < screen_height:
+        if self.rect.centery < game_object.pong.rect.top and self.rect.bottom < gmv.screen_height:
             self.rect.move_ip(0, self.ai_speed)
         # move up
-        if self.rect.centery > pong.rect.bottom and self.rect.top > margin:
+        if self.rect.centery > game_object.pong.rect.bottom and self.rect.top > gmv.margin:
             self.rect.move_ip(0, -1 * self.ai_speed)
 
     def draw(self, color1):
         if gs.invisible == True:
-            pygame.draw.rect(screen, bg2, self.rect)
+            pygame.draw.rect(gmv.screen, gmv.bg, self.rect)
         else:
-            pygame.draw.rect(screen, color1, self.rect)
-            # make the paddel red (when losing)
-            if z == False:
-                pygame.draw.rect(screen, red, self.rect)
+            pygame.draw.rect(gmv.screen, color1, self.rect)
+            # make the paddel gmv.red (when losing)
+            if gmv.z == False:
+                pygame.draw.rect(gmv.screen, gmv.red, self.rect)
             # a random event that make the paddle almost invisible
 
     def draw2(self):
-        pygame.draw.rect(screen, light_grey, self.rect)
-        if not zz:
-            pygame.draw.rect(screen, red, self.rect)
+        pygame.draw.rect(gmv.screen, gmv.light_grey, self.rect)
+        if not gmv.zz:
+            pygame.draw.rect(gmv.screen, gmv.red, self.rect)
 
     def update(self):
 
@@ -142,25 +165,25 @@ class Ball():
 
     def move(self):
 
-        # check collision with top margin
-        if self.rect.top < margin:
+        # check collision with top gmv.margin
+        if self.rect.top < gmv.margin:
             self.speed_y *= -1
         # check collision with bottom of the screen
-        if self.rect.bottom > screen_height:
+        if self.rect.bottom > gmv.screen_height:
             self.speed_y *= -1
-        if self.rect.colliderect(player_paddle) or self.rect.colliderect(cpu2):
+        if self.rect.colliderect(game_object.player_paddle) or self.rect.colliderect(game_object.cpu2):
             self.speed_x *= -1
 
         # check for out of bounds
         if self.rect.left < 0:
             self.winner = 1
-        if self.rect.left > screen_width:
+        if self.rect.left > gmv.screen_width:
             self.winner = -1
 
         # update ball position and activate random movement
         if gs.random_movement:
             self.rect.y += self.speed_y
-            self.rect.x += self.speed_x * (y * math.cos(angle2) - 100 and x * math.sin(angle2) / 5)
+            self.rect.x += self.speed_x * (gmv.y * math.cos(gmv.angle2) - 100 and gmv.x * math.sin(gmv.angle2) / 5)
         else:
             self.rect.x += self.speed_x
             self.rect.y += self.speed_y
@@ -169,15 +192,15 @@ class Ball():
 
     def static1(self):
 
-        if self.rect.colliderect(static_paddle1) or self.rect.colliderect(static_paddle2):
+        if self.rect.colliderect(game_object.static_paddle1) or self.rect.colliderect(game_object.static_paddle2):
             self.speed_x *= -1
 
     def draw(self):
-        pygame.draw.circle(screen, light_grey, (self.rect.x + self.ball_rad, self.rect.y + self.ball_rad),
+        pygame.draw.circle(gmv.screen, gmv.light_grey, (self.rect.x + self.ball_rad, self.rect.y + self.ball_rad),
                            self.ball_rad)
 
     def draw2(self):
-        pygame.draw.circle(screen, violet, (self.rect.x + self.ball_rad, self.rect.y + self.ball_rad), self.ball_rad)
+        pygame.draw.circle(gmv.screen, gmv.violet, (self.rect.x + self.ball_rad, self.rect.y + self.ball_rad), self.ball_rad)
 
     def ball_size(self):
 
@@ -212,56 +235,39 @@ class Ball():
         self.winner = 0  # 1 is the player and -1 is the CPU
         return self.winner
 
+class GameObjects:
+    # create puddles:
+    player_paddle = Paddle(gmv.screen_width - 40, gmv.screen_height // 2 - 20)
+    static_paddle1 = StaticPaddle(300, gmv.screen_height // 10)
+    static_paddle2 = StaticPaddle(300, gmv.screen_height - 100)
+    cpu2 = Paddle(25, gmv.screen_height // 2 - 20)
+    # create balls:
+    pong = Ball(gmv.screen_width - 60, gmv.screen_height // 2 + 15)
+    pong2 = Ball(gmv.screen_width - 80, gmv.screen_height // 2 + 15)
+    pong3 = Ball(gmv.screen_width - 80, gmv.screen_height // 2 + 15)
+    pong4 = Ball(gmv.screen_width - 80, gmv.screen_height // 2 + 15)
 
-# create puddles:
-player_paddle = Paddle(screen_width - 40, screen_height // 2 - 20)
-static_paddle1 = StaticPaddle(300, screen_height // 10)
-static_paddle2 = StaticPaddle(300, screen_height - 100)
-cpu2 = Paddle(25, screen_height // 2 - 20)
-# create ball:
-pong = Ball(screen_width - 60, screen_height // 2 + 15)
-pong2 = Ball(screen_width - 80, screen_height // 2 + 15)
-pong3 = Ball(screen_width - 80, screen_height // 2 + 15)
-pong4 = Ball(screen_width - 80, screen_height // 2 + 15)
 
-# set clock
-Clock = pygame.time.Clock()
-timer = 0
-# define colors
-# background color:
-bg = (36, 36, 36)
-bg2 = (38, 38, 38)
-
-# objects colors:
-light_grey = (200, 200, 200)
-
-deep_sky = (0, 191, 255)
-red = (238, 44, 44)
-violet = (255, 62, 150)
-violet2 = (230, 230, 50)
-
-# define font:
-font = pygame.font.SysFont('Helvetica', 18)
-font2 = pygame.font.SysFont('Helvetica', 24)
+game_object = GameObjects()
 
 def draw_board():
-    # filling the screen with one color (bg)
-    screen.fill((bg))
+    # filling the screen with one color (gmv.bg)
+    gmv.screen.fill((gmv.bg))
     # drawing a line in the middle of the screen
-    pygame.draw.aaline(screen, light_grey, (300, 500), (300, 50))
+    pygame.draw.aaline(gmv.screen, gmv.light_grey, (300, 500), (300, 50))
     # drawing a line in the upper part of the screen
-    pygame.draw.line(screen, light_grey, (0, margin), (screen_width, margin))
+    pygame.draw.line(gmv.screen, gmv.light_grey, (0, gmv.margin), (gmv.screen_width, gmv.margin))
 
 
 # function for displaying text on screen
 def draw_text(text, font, text_col, x, y):
     img = font.render(text, True, text_col)
-    screen.blit(img, (x, y))
+    gmv.screen.blit(img, (x, y))
 
 
 def draw_text2(text, font, text_col, x, y, bg):
     img = font.render(text, True, text_col, bg)
-    screen.blit(img, (x, y))
+    gmv.screen.blit(img, (x, y))
 
 
 # random events generator
@@ -276,90 +282,90 @@ def random_gen(random_num):
 # main game loop
 while gs2.run:
 
-    angle1 += 0.01
-    angle2 += 0.01
-    timer += 1
-    fpsClock.tick(fps)
+    gmv.angle1 += 0.01
+    gmv.angle2 += 0.01
+    gmv.timer += 1
+    gmv.fpsClock.tick(gmv.fps)
     draw_board()
-    draw_text('CPU: ' + str(cpu_score), font, light_grey, 30, 15)
-    draw_text(p1 + str(player_score), font, light_grey, screen_width - 70, 15)
-    draw_text('Ball Speed: ' + str(abs(pong.speed_x)), font, light_grey, 255, 15)
+    draw_text('CPU: ' + str(gmv.cpu_score), gmv.font, gmv.light_grey, 30, 15)
+    draw_text(gmv.p1 + str(gmv.player_score), gmv.font, gmv.light_grey, gmv.screen_width - 70, 15)
+    draw_text('Ball Speed: ' + str(abs(game_object.pong.speed_x)), gmv.font, gmv.light_grey, 255, 15)
     # drawing the two puddles:
-    player_paddle.draw(Paddle.color_1)
-    cpu2.draw2()
+    game_object.player_paddle.draw(Paddle.color_1)
+    game_object.cpu2.draw2()
 
-    if live_ball:
-        speed_increase += 1
+    if gmv.live_ball:
+        gmv.speed_increase += 1
 
-        winner = pong.move()
+        gmv.winner = game_object.pong.move()
 
-        if winner == 0:
-            pong.draw2()
+        if gmv.winner == 0:
+            game_object.pong.draw2()
             # draw ball
 
             # adding more balls random event
             if gs.many_balls:
-                pong2.draw2()
-                pong2.move()
-                pong3.draw2()
-                pong3.move()
-                pong4.draw2()
-                pong4.move()
+                game_object.pong2.draw2()
+                game_object.pong2.move()
+                game_object.pong3.draw2()
+                game_object.pong3.move()
+                game_object.pong4.draw2()
+                game_object.pong4.move()
 
             # changing the player paddle size
             if gs.player_size:
-                player_paddle.update()
+                game_object.player_paddle.update()
             # changing the ball size #1
             if gs.ball_size:
-                pong.ball_size()
+                game_object.pong.ball_size()
             # changing the ball size#2
             if gs.ball_size2:
-                pong.ball_size2()
+                game_object.pong.ball_size2()
             # changing the cpu_paddle size
             if gs.ai_size:
-                cpu2.update()
+                game_object.cpu2.update()
             # adding static paddles (as walls)
             if gs.static:
-                static_paddle1.draw2()
-                static_paddle2.draw2()
-                pong.static1()
+                game_object.static_paddle1.draw2()
+                game_object.static_paddle2.draw2()
+                game_object.pong.static1()
 
             # move paddles
-            player_paddle.move()
-            cpu2.ai()
+            game_object.player_paddle.move()
+            game_object.cpu2.ai()
 
         else:
-            live_ball = False
-            if winner == 1:
-                player_score += 1
-                zz = False
-            elif winner == -1:
-                cpu_score += 1
-                z = False
+            gmv.live_ball = False
+            if gmv.winner == 1:
+                gmv.player_score += 1
+                gmv.zz = False
+            elif gmv.winner == -1:
+                gmv.cpu_score += 1
+                gmv.z = False
 
     # txt on screen while reset
-    if live_ball == False:
-        if winner == 0:
-            draw_text2('CLICK ANYWHERE TO START', font2, deep_sky, 160, screen_height // 2 - 6, bg)
-        if winner == 1:
-            draw_text('YOU SCORED!', font, violet, 390, 15)
-            draw_text2('CLICK ANYWHERE TO START', font2, deep_sky, 160, screen_height // 2 - 6, bg)
-        if winner == -1:
-            draw_text('CPU SCORED!', font, violet, 110, 15)
-            draw_text2('CLICK ANYWHERE TO START', font2, deep_sky, 160, screen_height // 2 - 6, bg)
+    if not gmv.live_ball:
+        if gmv.winner == 0:
+            draw_text2('CLICK ANYWHERE TO START', gmv.font2, gmv.deep_sky, 160, gmv.screen_height // 2 - 6, gmv.bg)
+        if gmv.winner == 1:
+            draw_text('YOU SCORED!', gmv.font, gmv.violet, 390, 15)
+            draw_text2('CLICK ANYWHERE TO START', gmv.font2, gmv.deep_sky, 160, gmv.screen_height // 2 - 6, gmv.bg)
+        if gmv.winner == -1:
+            draw_text('CPU SCORED!', gmv.font, gmv.violet, 110, 15)
+            draw_text2('CLICK ANYWHERE TO START', gmv.font2, gmv.deep_sky, 160, gmv.screen_height // 2 - 6, gmv.bg)
 
     for event in pygame.event.get():
 
         if event.type == pygame.QUIT:
-            write_score_to_json(player_score, cpu_score, difficulty)
+            write_score_to_json(gmv.player_score, gmv.cpu_score, difficulty)
             gs2.run = False
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_ESCAPE:
-                write_score_to_json(player_score, cpu_score, difficulty)
+                write_score_to_json(gmv.player_score, gmv.cpu_score, difficulty)
                 gs2.run2 = True
                 gs2.run = False
                 run2()
-                live_ball = False
+                gmv.live_ball = False
                 gs2.run = True
             if event.key == pygame.K_p:
                 game_paused = True
@@ -367,8 +373,8 @@ while gs2.run:
                 run2(game_paused == True)
                 print(game_paused)
 
-    if event.type == pygame.MOUSEBUTTONDOWN and not live_ball:
-        live_ball = True
+    if event.type == pygame.MOUSEBUTTONDOWN and not gmv.live_ball:
+        gmv.live_ball = True
         print(gs2.difficulty)
         # resetting events triggers every time the game start
         gs = GameState()
@@ -436,26 +442,26 @@ while gs2.run:
             gs.random_movement = True
             print(choice)
 
-        player_paddle.reset(screen_width - 40, screen_height // 2 - 20)
-        cpu2.reset(25, screen_height // 2 - 20)
-        pong.reset(screen_width - 300, screen_height // 2 + 5)
-        pong2.reset(screen_width - 300, screen_height // 2 + 5)
-        pong3.reset(screen_width - 300, screen_height // 2 + 5)
-        pong4.reset(screen_width - 300, screen_height // 2 + 5)
+        game_object.player_paddle.reset(gmv.screen_width - 40, gmv.screen_height // 2 - 20)
+        game_object.cpu2.reset(25, gmv.screen_height // 2 - 20)
+        game_object.pong.reset(gmv.screen_width - 300, gmv.screen_height // 2 + 5)
+        game_object.pong2.reset(gmv.screen_width - 300, gmv.screen_height // 2 + 5)
+        game_object.pong3.reset(gmv.screen_width - 300, gmv.screen_height // 2 + 5)
+        game_object.pong4.reset(gmv.screen_width - 300, gmv.screen_height // 2 + 5)
 
-        z = True
-        zz = True
+        gmv.z = True
+        gmv.zz = True
 
-    if speed_increase > 500:
-        speed_increase = 0
-        if pong.speed_x < 0:
-            pong.speed_x -= 1
+    if gmv.speed_increase > 500:
+        gmv.speed_increase = 0
+        if game_object.pong.speed_x < 0:
+            game_object.pong.speed_x -= 1
 
-        if pong.speed_x > 0:
-            pong.speed_x += 1
-        if pong.speed_y < 0:
-            pong.speed_y -= 1
-        if pong.speed_y > 0:
-            pong.speed_y += 1
+        if game_object.pong.speed_x > 0:
+            game_object.pong.speed_x += 1
+        if game_object.pong.speed_y < 0:
+            game_object.pong.speed_y -= 1
+        if game_object.pong.speed_y > 0:
+            game_object.pong.speed_y += 1
 
     pygame.display.update()
