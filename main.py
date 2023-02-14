@@ -5,59 +5,12 @@ import pygame.time
 from pygame.locals import *
 from menu import *
 from GameStat import *
+from GeneralMainVariables import *
 
 
 # initiating pygame
 pygame.init()
 pygame.display.set_caption("Evil Pong")
-
-
-# define game variable
-class GeneralMainVariables:
-    # set up the game window
-    screen_width = 600
-    screen_height = 500
-    screen = pygame.display.set_mode((screen_width, screen_height))
-    angle1 = 0
-    angle2 = 0
-    p1 = "P1: "
-    cpu_score = 0
-    player_score = 0
-    z = True
-    zz = True
-    live_ball = False
-    margin = 50
-    fps = 60
-    winner = 0
-    speed_increase = 0
-    random_num = [0]
-    x = 5
-    y = 5
-
-    # set clock
-    Clock = pygame.time.Clock()
-    timer = 0
-    fpsClock = pygame.time.Clock()
-
-    # define colors
-    # background color:
-    bg = (36, 36, 36)
-    bg2 = (38, 38, 38)
-
-    # objects colors:
-    light_grey = (200, 200, 200)
-
-    # more colors
-    deep_sky = (0, 191, 255)
-    red = (238, 44, 44)
-    violet = (255, 62, 150)
-    violet2 = (230, 230, 50)
-
-    # define font:
-    font = pygame.font.SysFont('Helvetica', 18)
-    font2 = pygame.font.SysFont('Helvetica', 24)
-
-
 
 # initiating GameState class
 gmv = GeneralMainVariables
@@ -200,7 +153,8 @@ class Ball():
                            self.ball_rad)
 
     def draw2(self):
-        pygame.draw.circle(gmv.screen, gmv.violet, (self.rect.x + self.ball_rad, self.rect.y + self.ball_rad), self.ball_rad)
+        pygame.draw.circle(gmv.screen, gmv.violet, (self.rect.x + self.ball_rad, self.rect.y + self.ball_rad),
+                           self.ball_rad)
 
     def ball_size(self):
 
@@ -247,8 +201,8 @@ class GameObjects:
     pong3 = Ball(gmv.screen_width - 80, gmv.screen_height // 2 + 15)
     pong4 = Ball(gmv.screen_width - 80, gmv.screen_height // 2 + 15)
 
-
 game_object = GameObjects()
+
 
 def draw_board():
     # filling the screen with one color (gmv.bg)
@@ -398,7 +352,6 @@ while gs2.run:
                 choice = random_gen(random_num)
             else:
                 choice = None
-
 
         if choice == [1]:
             print(choice)
