@@ -1,4 +1,3 @@
-import json
 import math
 import random
 from datetime import datetime
@@ -6,6 +5,7 @@ import pygame.time
 from pygame.locals import *
 from menu import *
 from GameStat import *
+
 # initiating pygame
 pygame.init()
 
@@ -41,11 +41,11 @@ y = 5
 # initiating GameState class
 
 gs = GameState()
-difficulty = gs.difficulty
+difficulty = gs2.difficulty
 
-#function to write the scors to a file
+
+# function to write the scors to a file
 def write_score_to_json(player_score, cpu_score, difficulty):
-
     # get current date
     date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     try:
@@ -60,6 +60,7 @@ def write_score_to_json(player_score, cpu_score, difficulty):
         json.dump(data, score_file, separators=(",", ": "), indent=4)
         score_file.write("\n")
 
+
 class Paddle:
     color_1 = (200, 200, 200)
 
@@ -67,7 +68,7 @@ class Paddle:
         self.reset(x, y)
 
     def move(self):
-        if gs.reverse_keys == False:
+        if not gs.reverse_keys:
             key = pygame.key.get_pressed()
             if key[pygame.K_UP] and self.rect.top > margin:
                 self.rect.move_ip(0, -1 * self.speed)
@@ -89,7 +90,6 @@ class Paddle:
         if self.rect.centery > pong.rect.bottom and self.rect.top > margin:
             self.rect.move_ip(0, -1 * self.ai_speed)
 
-
     def draw(self, color1):
         if gs.invisible == True:
             pygame.draw.rect(screen, bg2, self.rect)
@@ -102,7 +102,7 @@ class Paddle:
 
     def draw2(self):
         pygame.draw.rect(screen, light_grey, self.rect)
-        if zz == False:
+        if not zz:
             pygame.draw.rect(screen, red, self.rect)
 
     def update(self):
@@ -112,7 +112,6 @@ class Paddle:
         elif self.rect.height <= self.min_size:
             self.size_direction = 1
         self.rect.height += self.size_change * self.size_direction
-
 
     def reset(self, x, y):
         self.x = x
@@ -129,10 +128,13 @@ class Paddle:
             self.min_size = 50
             self.max_size = 180
 
-class static_paddle(Paddle):
+
+class StaticPaddle(Paddle):
     def __init__(self, x, y):
         super().__init__(x, y)
         self.rect = Rect(self.x, self.y, 8, 100)
+
+
 class Ball():
 
     def __init__(self, x, y):
@@ -156,7 +158,7 @@ class Ball():
             self.winner = -1
 
         # update ball position and activate random movement
-        if gs.random_movement == True:
+        if gs.random_movement:
             self.rect.y += self.speed_y
             self.rect.x += self.speed_x * (y * math.cos(angle2) - 100 and x * math.sin(angle2) / 5)
         else:
@@ -164,13 +166,16 @@ class Ball():
             self.rect.y += self.speed_y
 
         return self.winner
+
     def static1(self):
 
         if self.rect.colliderect(static_paddle1) or self.rect.colliderect(static_paddle2):
             self.speed_x *= -1
+
     def draw(self):
         pygame.draw.circle(screen, light_grey, (self.rect.x + self.ball_rad, self.rect.y + self.ball_rad),
                            self.ball_rad)
+
     def draw2(self):
         pygame.draw.circle(screen, violet, (self.rect.x + self.ball_rad, self.rect.y + self.ball_rad), self.ball_rad)
 
@@ -207,10 +212,11 @@ class Ball():
         self.winner = 0  # 1 is the player and -1 is the CPU
         return self.winner
 
+
 # create puddles:
 player_paddle = Paddle(screen_width - 40, screen_height // 2 - 20)
-static_paddle1 = static_paddle(300, screen_height // 10)
-static_paddle2 = static_paddle(300, screen_height - 100)
+static_paddle1 = StaticPaddle(300, screen_height // 10)
+static_paddle2 = StaticPaddle(300, screen_height - 100)
 cpu2 = Paddle(25, screen_height // 2 - 20)
 # create ball:
 pong = Ball(screen_width - 60, screen_height // 2 + 15)
@@ -238,7 +244,6 @@ violet2 = (230, 230, 50)
 font = pygame.font.SysFont('Helvetica', 18)
 font2 = pygame.font.SysFont('Helvetica', 24)
 
-
 def draw_board():
     # filling the screen with one color (bg)
     screen.fill((bg))
@@ -258,6 +263,7 @@ def draw_text2(text, font, text_col, x, y, bg):
     img = font.render(text, True, text_col, bg)
     screen.blit(img, (x, y))
 
+
 # random events generator
 def random_gen(random_num):
     num_list = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
@@ -266,9 +272,9 @@ def random_gen(random_num):
         choice = (random.choices(num_list, w, k=1))
     return choice
 
-run = True
+
 # main game loop
-while run:
+while gs2.run:
 
     angle1 += 0.01
     angle2 += 0.01
@@ -282,7 +288,7 @@ while run:
     player_paddle.draw(Paddle.color_1)
     cpu2.draw2()
 
-    if live_ball == True:
+    if live_ball:
         speed_increase += 1
 
         winner = pong.move()
@@ -291,8 +297,8 @@ while run:
             pong.draw2()
             # draw ball
 
-            #adding more balls random event
-            if gs.many_balls == True:
+            # adding more balls random event
+            if gs.many_balls:
                 pong2.draw2()
                 pong2.move()
                 pong3.draw2()
@@ -301,19 +307,19 @@ while run:
                 pong4.move()
 
             # changing the player paddle size
-            if gs.player_size == True:
+            if gs.player_size:
                 player_paddle.update()
             # changing the ball size #1
-            if gs.ball_size == True:
+            if gs.ball_size:
                 pong.ball_size()
             # changing the ball size#2
-            if gs.ball_size2 == True:
+            if gs.ball_size2:
                 pong.ball_size2()
             # changing the cpu_paddle size
-            if gs.ai_size == True:
+            if gs.ai_size:
                 cpu2.update()
             # adding static paddles (as walls)
-            if gs.static == True:
+            if gs.static:
                 static_paddle1.draw2()
                 static_paddle2.draw2()
                 pong.static1()
@@ -342,103 +348,103 @@ while run:
             draw_text('CPU SCORED!', font, violet, 110, 15)
             draw_text2('CLICK ANYWHERE TO START', font2, deep_sky, 160, screen_height // 2 - 6, bg)
 
-
     for event in pygame.event.get():
 
         if event.type == pygame.QUIT:
             write_score_to_json(player_score, cpu_score, difficulty)
-            run = False
+            gs2.run = False
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_ESCAPE:
                 write_score_to_json(player_score, cpu_score, difficulty)
-                run = False
+                gs2.run2 = True
+                gs2.run = False
+                run2()
+                live_ball = False
+                gs2.run = True
             if event.key == pygame.K_p:
                 game_paused = True
-                run2(run,game_paused==True)
+                gs2.run2 = True
+                run2(game_paused == True)
                 print(game_paused)
 
+    if event.type == pygame.MOUSEBUTTONDOWN and not live_ball:
+        live_ball = True
+        print(gs2.difficulty)
+        # resetting events triggers every time the game start
+        gs = GameState()
 
-    if event.type == pygame.MOUSEBUTTONDOWN and live_ball == False:
-            live_ball = True
-            print("test2 = ", gs2.test)
+        if gs2.difficulty == 1:
+            print(gs2.difficulty)
+            choice = None
 
-            # resetting events triggers every time the game start
-            gs = GameState()
-            print("test3 = ", gs2.test)
-
-            if gs.difficulty == 1:
-                print (gs.difficulty)
-                pass
-            elif gs.difficulty == 2:
-                choice2 = random_gen(random_num)
-                print(f"first random: {choice2}")
-                if choice2 == [2] or choice2 == [4] or choice2 == [6]:
-                    choice = random_gen(random_num)
-                else:
-                    choice = None
-            elif gs.difficulty == 3:
-                choice2 = random_gen(random_num)
-                print(f"first random: {choice2}")
-                if choice2 == [1] or choice2 == [3] or choice2 == [5] or choice2 == [7] \
-                        or choice2 == [9] or choice2 == [11]:
-                    choice = random_gen(random_num)
-                else:
-                    choice = None
+        elif gs2.difficulty == 2:
+            choice2 = random_gen(random_num)
+            print(f"first random: {choice2}")
+            if choice2 == [2] or choice2 == [4] or choice2 == [6]:
+                choice = random_gen(random_num)
             else:
-                pass
+                choice = None
+        elif gs2.difficulty == 3:
+            choice2 = random_gen(random_num)
+            print(f"first random: {choice2}")
+            if choice2 == [1] or choice2 == [3] or choice2 == [5] or choice2 == [7] \
+                    or choice2 == [9] or choice2 == [11]:
+                choice = random_gen(random_num)
+            else:
+                choice = None
 
-            if choice == [1]:
-                print(choice)
-                gs.static = True
-            if choice == [2]:
-                print(choice)
-                gs.random_movement = True
-            if choice == [3]:
-                gs.invisible = True
-                print(choice)
-            if choice == [4]:
-                gs.ball_size2 = True
-                print(choice)
-            if choice == [5]:
-                gs.ball_size = True
-                print(choice)
-            if choice == [6]:
-                gs.ai_size = True
-                print(choice)
-            if choice == [7]:
-                gs.reverse_keys = True
-                print(choice)
-            if choice == [8]:
-                gs.many_balls = True
-                print(choice)
-            if choice == [9]:
-                gs.player_size = True
-                print(choice)
-            # mixed events:
-            if choice == [10]:
-                gs.ball_size = True
-                gs.reverse_keys = True
-                print(choice)
-            if choice == [11]:
-                gs.ball_size2 = True
-                gs.invisible = True
-                print(choice)
-            if choice == [12]:
-                gs.ai_size = True
-                gs.static = True
-                gs.random_movement = True
-                print(choice)
 
-            player_paddle.reset(screen_width - 40, screen_height // 2 - 20)
-            cpu2.reset(25, screen_height // 2 - 20)
-            pong.reset(screen_width - 300, screen_height // 2 + 5)
-            pong2.reset(screen_width - 300, screen_height // 2 + 5)
-            pong3.reset(screen_width - 300, screen_height // 2 + 5)
-            pong4.reset(screen_width - 300, screen_height // 2 + 5)
+        if choice == [1]:
+            print(choice)
+            gs.static = True
+        if choice == [2]:
+            print(choice)
+            gs.random_movement = True
+        if choice == [3]:
+            gs.invisible = True
+            print(choice)
+        if choice == [4]:
+            gs.ball_size2 = True
+            print(choice)
+        if choice == [5]:
+            gs.ball_size = True
+            print(choice)
+        if choice == [6]:
+            gs.ai_size = True
+            print(choice)
+        if choice == [7]:
+            gs.reverse_keys = True
+            print(choice)
+        if choice == [8]:
+            gs.many_balls = True
+            print(choice)
+        if choice == [9]:
+            gs.player_size = True
+            print(choice)
+        # mixed events:
+        if choice == [10]:
+            gs.ball_size = True
+            gs.reverse_keys = True
+            print(choice)
+        if choice == [11]:
+            gs.ball_size2 = True
+            gs.invisible = True
+            print(choice)
+        if choice == [12]:
+            gs.ai_size = True
+            gs.static = True
+            gs.random_movement = True
+            print(choice)
 
-            z = True
-            zz = True
+        player_paddle.reset(screen_width - 40, screen_height // 2 - 20)
+        cpu2.reset(25, screen_height // 2 - 20)
+        pong.reset(screen_width - 300, screen_height // 2 + 5)
+        pong2.reset(screen_width - 300, screen_height // 2 + 5)
+        pong3.reset(screen_width - 300, screen_height // 2 + 5)
+        pong4.reset(screen_width - 300, screen_height // 2 + 5)
 
+        z = True
+        zz = True
 
     if speed_increase > 500:
         speed_increase = 0

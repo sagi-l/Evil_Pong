@@ -1,148 +1,244 @@
+import sys
 import pygame
+import json
 from GameStat import *
-run = True
-run2 = True
-run_options = False
-run_start = False
-run_scores = False
+
+# menu file variables
 pygame.init()
 
-gs2 = SecondGameState()
 
-def start():
-    print("start screen!")
-    run_start = True
-    while run_start:
-        screen_width = 600
-        screen_height = 500
-        screen = pygame.display.set_mode((screen_width, screen_height))
-        pygame.display.set_caption("Evil Pong Main Menu")
-        screen.fill((36, 36, 36))
-
-        for event in pygame.event.get():
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_p:
-                    game_paused = True
-
-                    print("pause")
-                elif event.key == pygame.K_o:
-                    game_paused = False
-                    run_start = False
-
-                if event.key == pygame.K_ESCAPE:
-                    run2 = True
-                    run_start = False
-                    gs2.test = 10
-
-                    print("test1 = ", gs2.test)
-
-            if event.type == pygame.QUIT:
-                run_start = False
-                run2 = True
-
-        pygame.display.update()
-def options():
-    print("options screen")
-
-
-def scores():
-    print("scores screen")
-
-
-def run2(run=True, game_paused=False):
-    # setting up the game menu screen
-    screen_width = 600
-    screen_height = 500
-    screen = pygame.display.set_mode((screen_width, screen_height))
-    pygame.display.set_caption("Evil Pong Main Menu")
-
-    def draw_text(text, font, color, x, y):
-        img = font.render(text, True, color)
-        screen.blit(img, (x, y))
-
+class GeneralMenuVariables:
     # define fonts
-    font =  pygame.font.SysFont('Helvetica', 24)
+    font = pygame.font.SysFont('Helvetica', 24)
     font2 = pygame.font.SysFont('Helvetica', 90)
 
     # define colors
     violet = (255, 62, 150)
     light_violet = (255, 153, 204)
+    # define the screen
+    screen_width = 600
+    screen_height = 500
+    screen = pygame.display.set_mode((screen_width, screen_height))
 
+
+# initiate the classes
+gs2 = SecondGameState()
+gv = GeneralMenuVariables()
+
+
+def game_exit():
+    for event in pygame.event.get():
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_ESCAPE:
+                gs2.run_start = False
+                gs2.run_options = False
+                gs2.run_scores = False
+                gs2.run2 = True
+
+        if event.type == pygame.QUIT:
+            gs2.run_scores = False
+            gs2.run_options = False
+            gs2.run_start = False
+            gs2.run2 = False
+            gs2.run = False
+
+
+def start_screen():
+    print("start screen!")
+
+    while gs2.run_start:
+
+        pygame.display.set_caption("Evil Pong Main Menu")
+        gv.screen.fill((36, 36, 36))
+        draw_text("Press ESC to return to main menu", gv.font, gv.light_violet, 160, 450)
+
+        # drawing rectangles for capturing the mouse key press
+        diff_1 = pygame.Rect(140, 150, 300, 30)
+        diff_2 = pygame.Rect(140, 230, 300, 20)
+        diff_3 = pygame.Rect(140, 285, 300, 20)
+        mouse_pos = pygame.mouse.get_pos()
+
+        # drawing the text difficulty levels and redirecting to the main.py file
+        if diff_1.collidepoint(mouse_pos):
+            draw_text("Difficulty 1 - no random events", gv.font, gv.light_violet, 160, 150)
+            if pygame.mouse.get_pressed()[0]:
+                print("difficulty 1 selected")
+                gs2.difficulty = 1
+                print(gs2.difficulty)
+                gs2.run_start = False
+                gs2.run2 = False
+
+        else:
+            draw_text("Difficulty 1 - no random events", gv.font, gv.violet, 160, 150)
+
+        if diff_2.collidepoint(mouse_pos):
+            draw_text("Diffuculty 2 - Some random events", gv.font, gv.light_violet, 150, 220)
+
+            if pygame.mouse.get_pressed()[0]:
+                print("difficulty 2 selected")
+                gs2.difficulty = 2
+                print(gs2.difficulty)
+                gs2.run_start = False
+                gs2.run2 = False
+
+        else:
+            draw_text("Diffuculty 2 - Some random events", gv.font, gv.violet, 150, 220)
+
+        if diff_3.collidepoint(mouse_pos):
+            draw_text("Difficulty 3 - May the gods of probability save you", gv.font, gv.light_violet, 100, 280)
+
+            if pygame.mouse.get_pressed()[0]:
+                print("difficulty 3 selected")
+                gs2.difficulty = 3
+                print(gs2.difficulty)
+                gs2.run_start = False
+                gs2.run2 = False
+        else:
+            draw_text("Difficulty 3 - May the gods of probability save you", gv.font, gv.violet, 100, 280)
+
+        game_exit()
+
+        pygame.display.update()
+
+
+def options():
+    print("options screen")
+    while gs2.run_options:
+        pygame.display.set_caption("Evil Pong Options Menu")
+        gv.screen.fill((36, 36, 36))
+
+        # draw text on screen
+        draw_text("Music ON/OFF", gv.font, gv.violet, 230, 200)
+        draw_text("Sound ON/OFF", gv.font, gv.violet, 230, 240)
+        draw_text("Press ESC to return to main menu", gv.font, gv.light_violet, 160, 300)
+
+        game_exit()
+
+        pygame.display.update()
+
+
+def scores():
+    print("scores screen")
+    while gs2.run_scores:
+
+        pygame.display.set_caption("Evil Pong Scores Menu")
+        gv.screen.fill((36, 36, 36))
+        draw_text("Press ESC to return to main menu", gv.font, gv.violet, 160, 450)
+        try:
+            with open("scores.json", "r") as scores:
+                data = json.load(scores)
+        except (FileNotFoundError, json.decoder.JSONDecodeError):
+            print("File not found")
+            return
+
+        scores = data["scores"]
+        scores = scores[-8:]  # get the last 10 scores
+
+        # Display scores on screen
+        y = 50
+        for score in scores:
+            date = score["date"]
+            player_score = score["Player"]
+            cpu_score = score["CPU"]
+            difficulty = score["difficulty"]
+
+            text = gv.font.render(f"{date}: Player: {player_score}, CPU: {cpu_score}, Difficulty: {difficulty}", True,
+                                  (255, 255, 255))
+            gv.screen.blit(text, (80, y))
+            y += 50
+
+        game_exit()
+
+        pygame.display.update()
+
+
+pygame.display.set_caption("Evil Pong Main Menu")
+
+
+def draw_text(text, font, color, x, y):
+    img = gv.font.render(text, True, color)
+    gv.screen.blit(img, (x, y))
+
+
+# Main game loop
+def run2(game_paused=False):
+    # setting up the game menu screen
+
+    pygame.display.set_caption("Evil Pong Main Menu")
     # game variables
-    run2 = True
-    while run2:
-        screen.fill((36, 36, 36))
-
+    while gs2.run2:
+        gv.screen.fill((36, 36, 36))
+        gs2.run_start = True
+        gs2.run_options = True
+        gs2.run_scores = True
         # check if the game is paused:
         if game_paused:
-            draw_text("Game paused, press O to continue", font, violet, 150, 220)
+            draw_text("Game paused, press O to continue", gv.font, gv.violet, 150, 220)
         else:
-            draw_text("EVIL PONG", font2, violet, 105, 20)
+            draw_text("EVIL PONG", gv.font2, gv.violet, 105, 20)
 
             # start button
             start_rect = pygame.Rect(260, 200, 80, 40)
             mouse_pos = pygame.mouse.get_pos()
             if start_rect.collidepoint(mouse_pos):
-                draw_text("Start", font, light_violet, 270, 200)
+                draw_text("Start", gv.font, gv.light_violet, 270, 200)
                 if pygame.mouse.get_pressed()[0]:
                     print("Start button pressed")
-                    start()
-
+                    start_screen()
             else:
-                draw_text("Start", font, violet, 270, 200)
+                draw_text("Start", gv.font, gv.violet, 270, 200)
 
             # options button
             options_rect = pygame.Rect(260, 240, 100, 40)
+
             if options_rect.collidepoint(mouse_pos):
-                draw_text("Options", font, light_violet, 260, 240)
+                draw_text("Options", gv.font, gv.light_violet, 260, 240)
                 if pygame.mouse.get_pressed()[0]:
                     print("Options button pressed")
                     options()
             else:
-                draw_text("Options", font, violet, 260, 240)
+                draw_text("Options", gv.font, gv.violet, 260, 240)
 
             # scores button
             scores_rect = pygame.Rect(260, 280, 80, 40)
+
             if scores_rect.collidepoint(mouse_pos):
-                draw_text("Scores", font, light_violet, 260, 280)
+                draw_text("Scores", gv.font, gv.light_violet, 260, 280)
                 if pygame.mouse.get_pressed()[0]:
                     print("Scores button pressed")
                     scores()
             else:
-                draw_text("Scores", font, violet, 260, 280)
+                draw_text("Scores", gv.font, gv.violet, 260, 280)
 
             # exit button
             exit_rect = pygame.Rect(275, 320, 50, 40)
             if exit_rect.collidepoint(mouse_pos):
-                draw_text("Exit", font, light_violet, 275, 320)
+                draw_text("Exit", gv.font, gv.light_violet, 275, 320)
                 if pygame.mouse.get_pressed()[0]:
                     print("Exit button pressed")
-                    run2 = False
-            else:
-                draw_text("Exit", font, violet, 275, 320)
+                    sys.exit()
 
+            else:
+                draw_text("Exit", gv.font, gv.violet, 275, 320)
 
         for event in pygame.event.get():
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_p:
                     game_paused = True
-
+                    gs2.run = False
                     print("pause")
                 elif event.key == pygame.K_o:
                     game_paused = False
-                    run2 = False
-
+                    gs2.run2 = False
+                    gs2.run = True
                 if event.key == pygame.K_ESCAPE:
-                    run2 = False
-                    gs2.test = 10
-
-                    print("test1 = ", gs2.test)
+                    gs2.run2 = False
+                    gs2.run = False
 
             if event.type == pygame.QUIT:
-                run2 = False
-
+                gs2.run2 = False
+                gs2.run = False
         pygame.display.update()
 
+
 run2()
-
-

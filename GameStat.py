@@ -1,10 +1,8 @@
-
-
+# class with the game variables that both the main.py and menu.py uses
 class GameState:
-    def __init__(self, player_size = False, many_balls = False, ai_size = False, reverse_keys =  False,
-                 random_movement = False, invisible = False, ball_size = False,
-                 ball_size2 = False, static = False, difficulty = None):
-
+    def __init__(self, player_size=False, many_balls=False, ai_size=False, reverse_keys=False,
+                 random_movement=False, invisible=False, ball_size=False,
+                 ball_size2=False, static=False):
         self.many_balls = many_balls
         self.player_size = player_size
         self.ai_size = ai_size
@@ -15,8 +13,14 @@ class GameState:
         self.ball_size2 = ball_size2
         self.static = static
         # game difficulty
-        self.difficulty = difficulty
 
+
+# a class with the game variable that both the main.py and menu.py uses and does not reset after each game
 class SecondGameState:
     test = None
-
+    difficulty = 0
+    run = True
+    run2 = True
+    run_start = True
+    run_options = True
+    run_scores = True
