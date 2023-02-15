@@ -7,6 +7,7 @@ from menu import *
 from GameStat import *
 from GeneralMainVariables import *
 
+
 # initiating pygame
 pygame.init()
 pygame.display.set_caption("Evil Pong")
@@ -100,7 +101,7 @@ class Paddle:
         self.max_size = 60
         self.size_change = 1
         self.size_direction = 1
-        if gs.ai_size == True:
+        if gs.ai_size:
             self.min_size = 50
             self.max_size = 180
 
@@ -251,6 +252,14 @@ def speed_increase():
             game_object.pong.speed_y += 1
 
 
+def objects_reset():
+    game_object.player_paddle.reset(gmv.screen_width - 40, gmv.screen_height // 2 - 20)
+    game_object.cpu2.reset(25, gmv.screen_height // 2 - 20)
+    game_object.pong.reset(gmv.screen_width - 300, gmv.screen_height // 2 + 5)
+    game_object.pong2.reset(gmv.screen_width - 300, gmv.screen_height // 2 + 5)
+    game_object.pong3.reset(gmv.screen_width - 300, gmv.screen_height // 2 + 5)
+    game_object.pong4.reset(gmv.screen_width - 300, gmv.screen_height // 2 + 5)
+
 # main game loop
 while gs2.run:
 
@@ -352,10 +361,12 @@ while gs2.run:
         gs = GameState()
 
         if gs2.difficulty == 1:
+            objects_reset()
             print(gs2.difficulty)
             choice = None
 
         elif gs2.difficulty == 2:
+
             choice2 = random_gen(random_num)
             print(f"first random: {choice2}")
             if choice2 == [2] or choice2 == [4] or choice2 == [6]:
@@ -413,12 +424,7 @@ while gs2.run:
             gs.random_movement = True
             print(choice)
 
-        game_object.player_paddle.reset(gmv.screen_width - 40, gmv.screen_height // 2 - 20)
-        game_object.cpu2.reset(25, gmv.screen_height // 2 - 20)
-        game_object.pong.reset(gmv.screen_width - 300, gmv.screen_height // 2 + 5)
-        game_object.pong2.reset(gmv.screen_width - 300, gmv.screen_height // 2 + 5)
-        game_object.pong3.reset(gmv.screen_width - 300, gmv.screen_height // 2 + 5)
-        game_object.pong4.reset(gmv.screen_width - 300, gmv.screen_height // 2 + 5)
+        objects_reset()
 
         gmv.z = True
         gmv.zz = True

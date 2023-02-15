@@ -10,7 +10,7 @@ pygame.init()
 class GeneralMenuVariables:
     # define fonts
     font = pygame.font.SysFont('Helvetica', 24)
-    font2 = pygame.font.SysFont('Helvetica', 90)
+    font2 = pygame.font.SysFont('Helvetica', 100)
 
     # define colors
     violet = (255, 62, 150)
@@ -160,6 +160,10 @@ def draw_text(text, font, color, x, y):
     gv.screen.blit(img, (x, y))
 
 
+def draw_large_text(text, font, color, x, y):
+    img = gv.font2.render(text, True, color)
+    gv.screen.blit(img, (x, y))
+
 # Main game loop
 def run2(game_paused=False):
     # setting up the game menu screen
@@ -175,51 +179,51 @@ def run2(game_paused=False):
         if game_paused:
             draw_text("Game paused, press O to continue", gv.font, gv.violet, 150, 220)
         else:
-            draw_text("EVIL PONG", gv.font2, gv.violet, 105, 20)
+            draw_large_text("EVIL PONG", gv.font2, gv.violet, 80, 20)
 
             # start button
             start_rect = pygame.Rect(260, 200, 80, 40)
             mouse_pos = pygame.mouse.get_pos()
             if start_rect.collidepoint(mouse_pos):
-                draw_text("Start", gv.font, gv.light_violet, 270, 200)
+                draw_text("Start", gv.font, gv.light_violet, 280, 200)
                 if pygame.mouse.get_pressed()[0]:
                     print("Start button pressed")
                     start_screen()
             else:
-                draw_text("Start", gv.font, gv.violet, 270, 200)
+                draw_text("Start", gv.font, gv.violet, 280, 200)
 
             # options button
             options_rect = pygame.Rect(260, 240, 100, 40)
 
             if options_rect.collidepoint(mouse_pos):
-                draw_text("Options", gv.font, gv.light_violet, 260, 240)
+                draw_text("Options", gv.font, gv.light_violet, 270, 240)
                 if pygame.mouse.get_pressed()[0]:
                     print("Options button pressed")
                     options()
             else:
-                draw_text("Options", gv.font, gv.violet, 260, 240)
+                draw_text("Options", gv.font, gv.violet, 270, 240)
 
             # scores button
             scores_rect = pygame.Rect(260, 280, 80, 40)
 
             if scores_rect.collidepoint(mouse_pos):
-                draw_text("Scores", gv.font, gv.light_violet, 260, 280)
+                draw_text("Scores", gv.font, gv.light_violet, 270, 280)
                 if pygame.mouse.get_pressed()[0]:
                     print("Scores button pressed")
                     scores()
             else:
-                draw_text("Scores", gv.font, gv.violet, 260, 280)
+                draw_text("Scores", gv.font, gv.violet, 270, 280)
 
             # exit button
-            exit_rect = pygame.Rect(275, 320, 50, 40)
+            exit_rect = pygame.Rect(285, 320, 50, 40)
             if exit_rect.collidepoint(mouse_pos):
-                draw_text("Exit", gv.font, gv.light_violet, 275, 320)
+                draw_text("Exit", gv.font, gv.light_violet, 285, 320)
                 if pygame.mouse.get_pressed()[0]:
                     print("Exit button pressed")
                     sys.exit()
 
             else:
-                draw_text("Exit", gv.font, gv.violet, 275, 320)
+                draw_text("Exit", gv.font, gv.violet, 285, 320)
 
         for event in pygame.event.get():
             if event.type == pygame.KEYDOWN:

@@ -7,19 +7,31 @@ class GeneralMainVariables:
     screen_width = 600
     screen_height = 500
     screen = pygame.display.set_mode((screen_width, screen_height))
+
+    # for random movement
     angle1 = 0
     angle2 = 0
+
+    # defining players
     p1 = "P1: "
     cpu_score = 0
     player_score = 0
+
+    # paddle color change
     z = True
     zz = True
+
+    # Game loop variables
     live_ball = False
     margin = 50
     fps = 60
     winner = 0
     speed_increase = 0
+
+    # for random number generator
     random_num = [0]
+
+    # for math function
     x = 5
     y = 5
 
