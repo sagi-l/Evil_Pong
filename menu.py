@@ -237,11 +237,12 @@ def run2(game_paused=False):
                     gs2.run = True
                 if event.key == pygame.K_ESCAPE:
                     gs2.run2 = False
-                    gs2.run = False
-
+                    if gs2.run:
+                        gs2.run2 = True
             if event.type == pygame.QUIT:
                 gs2.run2 = False
                 gs2.run = False
+                sys.exit()
         pygame.display.update()
 
 

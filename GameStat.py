@@ -23,3 +23,4 @@ class SecondGameState:
     run_start = True
     run_options = True
     run_scores = True
+    random_event_msg = False

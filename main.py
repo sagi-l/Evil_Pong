@@ -1,12 +1,12 @@
 import math
 import random
+import sys
 from datetime import datetime
 import pygame.time
 from pygame.locals import *
 from menu import *
 from GameStat import *
 from GeneralMainVariables import *
-
 
 # initiating pygame
 pygame.init()
@@ -229,7 +229,7 @@ def draw_text2(text, font, text_col, x, y, bg):
 
 
 # random events generator
-def random_gen(random_num):
+def random_gen(random_number):
     num_list = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
     w = [1 / 6, 1 / 6, 1 / 6, 1 / 6, 1 / 6, 1 / 6, 1 / 6, 1 / 6, 1 / 6, 1 / 6, 1 / 6, 1 / 6]
     for i in range(1):
@@ -259,6 +259,7 @@ def objects_reset():
     game_object.pong2.reset(gmv.screen_width - 300, gmv.screen_height // 2 + 5)
     game_object.pong3.reset(gmv.screen_width - 300, gmv.screen_height // 2 + 5)
     game_object.pong4.reset(gmv.screen_width - 300, gmv.screen_height // 2 + 5)
+
 
 # main game loop
 while gs2.run:
@@ -328,6 +329,7 @@ while gs2.run:
     if not gmv.live_ball:
         if gmv.winner == 0:
             draw_text2('CLICK ANYWHERE TO START', gmv.font2, gmv.deep_sky, 160, gmv.screen_height // 2 - 6, gmv.bg)
+
         if gmv.winner == 1:
             draw_text('YOU SCORED!', gmv.font, gmv.violet, 390, 15)
             draw_text2('CLICK ANYWHERE TO START', gmv.font2, gmv.deep_sky, 160, gmv.screen_height // 2 - 6, gmv.bg)
@@ -360,13 +362,15 @@ while gs2.run:
         # resetting events triggers every time the game start
         gs = GameState()
 
+        # difficulty selector
         if gs2.difficulty == 1:
-            objects_reset()
+
             print(gs2.difficulty)
             choice = None
 
         elif gs2.difficulty == 2:
 
+            gs2.run = True
             choice2 = random_gen(random_num)
             print(f"first random: {choice2}")
             if choice2 == [2] or choice2 == [4] or choice2 == [6]:
@@ -382,6 +386,7 @@ while gs2.run:
             else:
                 choice = None
 
+        # random events
         if choice == [1]:
             print(choice)
             gs.static = True
