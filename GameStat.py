@@ -17,7 +17,6 @@ class GameState:
 
 # a class with the game variable that both the main.py and menu.py uses and does not reset after each game
 class SecondGameState:
-    test = None
     difficulty = 0
     run = True
     run2 = True

@@ -7,7 +7,6 @@ from menu import *
 from GameStat import *
 from GeneralMainVariables import *
 
-
 # initiating pygame
 pygame.init()
 pygame.display.set_caption("Evil Pong")
@@ -19,6 +18,7 @@ difficulty = gs2.difficulty
 random_num = gmv.random_num
 bg = gmv.bg
 bg2 = gmv.bg2
+
 
 # function to write the scores to a file
 def write_score_to_json(player_score, cpu_score, difficulty):
@@ -67,12 +67,12 @@ class Paddle:
             self.rect.move_ip(0, -1 * self.ai_speed)
 
     def draw(self, color1):
-        if gs.invisible == True:
+        if gs.invisible:
             pygame.draw.rect(gmv.screen, gmv.bg, self.rect)
         else:
             pygame.draw.rect(gmv.screen, color1, self.rect)
-            # make the paddel gmv.red (when losing)
-            if gmv.z == False:
+            # make the paddle red (when losing)
+            if not gmv.z:
                 pygame.draw.rect(gmv.screen, gmv.red, self.rect)
             # a random event that make the paddle almost invisible
 
@@ -189,6 +189,7 @@ class Ball():
         self.winner = 0  # 1 is the player and -1 is the CPU
         return self.winner
 
+
 class GameObjects:
     # create puddles:
     player_paddle = Paddle(gmv.screen_width - 40, gmv.screen_height // 2 - 20)
@@ -201,12 +202,14 @@ class GameObjects:
     pong3 = Ball(gmv.screen_width - 80, gmv.screen_height // 2 + 15)
     pong4 = Ball(gmv.screen_width - 80, gmv.screen_height // 2 + 15)
 
+
 game_object = GameObjects()
 
 
+# general game functions
 def draw_board():
     # filling the screen with one color (gmv.bg)
-    gmv.screen.fill((gmv.bg))
+    gmv.screen.fill(gmv.bg)
     # drawing a line in the middle of the screen
     pygame.draw.aaline(gmv.screen, gmv.light_grey, (300, 500), (300, 50))
     # drawing a line in the upper part of the screen
@@ -231,6 +234,21 @@ def random_gen(random_num):
     for i in range(1):
         choice = (random.choices(num_list, w, k=1))
     return choice
+
+
+# gradual speed increase function
+def speed_increase():
+    if gmv.speed_increase > 500:
+        gmv.speed_increase = 0
+        if game_object.pong.speed_x < 0:
+            game_object.pong.speed_x -= 1
+
+        if game_object.pong.speed_x > 0:
+            game_object.pong.speed_x += 1
+        if game_object.pong.speed_y < 0:
+            game_object.pong.speed_y -= 1
+        if game_object.pong.speed_y > 0:
+            game_object.pong.speed_y += 1
 
 
 # main game loop
@@ -405,16 +423,6 @@ while gs2.run:
         gmv.z = True
         gmv.zz = True
 
-    if gmv.speed_increase > 500:
-        gmv.speed_increase = 0
-        if game_object.pong.speed_x < 0:
-            game_object.pong.speed_x -= 1
-
-        if game_object.pong.speed_x > 0:
-            game_object.pong.speed_x += 1
-        if game_object.pong.speed_y < 0:
-            game_object.pong.speed_y -= 1
-        if game_object.pong.speed_y > 0:
-            game_object.pong.speed_y += 1
+    speed_increase()
 
     pygame.display.update()

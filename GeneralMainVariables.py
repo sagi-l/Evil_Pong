@@ -1,4 +1,6 @@
 import pygame
+
+
 # general variables for the main game
 class GeneralMainVariables:
     # set up the game window
