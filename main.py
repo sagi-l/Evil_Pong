@@ -120,24 +120,28 @@ class Ball:
             sound2.set_volume(0.5)
             sound2.play()
         # check collision with cpu paddle
-        if self.rect.colliderect(game_object.cpu2) and self.speed_x < 0:
+        if self.rect.colliderect(game_object.cpu2):
             if abs(self.rect.left - game_object.cpu2.rect.right) < 10:
                 self.speed_x *= -1
             elif abs(self.rect.bottom - game_object.cpu2.rect.top) < 10 and self.speed_y > 0:
                 self.speed_x *= -1
+                self.speed_y *= -1
             elif abs(self.rect.top - game_object.cpu2.rect.bottom) < 10 and self.speed_y < 0:
                 self.speed_x *= -1
+                self.speed_y *= -1
             sound1.set_volume(0.5)
             sound1.play()
 
         # check collision with player paddle
         if self.rect.colliderect(game_object.player_paddle) and self.speed_x > 0:
-            if abs(self.rect.right - game_object.player_paddle.rect.left) < 10:
+            if abs(self.rect.right - game_object.player_paddle.rect.left) < 20:
                 self.speed_x *= -1
-            elif abs(self.rect.bottom - game_object.player_paddle.rect.top) < 10 and self.speed_y > 0:
+            elif abs(self.rect.bottom - game_object.player_paddle.rect.top) < 20 and self.speed_y > 0:
                 self.speed_x *= -1
-            elif abs(self.rect.top - game_object.player_paddle.rect.bottom) < 10 and self.speed_y < 0:
+                self.speed_y *= -1
+            elif abs(self.rect.top - game_object.player_paddle.rect.bottom) < 20 and self.speed_y < 0:
                 self.speed_x *= -1
+                self.speed_y *= -1
             sound1.set_volume(0.5)
             sound1.play()
         # check for out of bounds
@@ -208,7 +212,7 @@ class Ball:
 
 class GameObjects:
     # create paddles:
-    player_paddle = Paddle(gmv.screen_width - 40, gmv.screen_height // 2 - 20)
+    player_paddle = Paddle(gmv.screen_width - 30, gmv.screen_height // 2 - 20)
     static_paddle1 = StaticPaddle(300, gmv.screen_height // 10)
     static_paddle2 = StaticPaddle(300, gmv.screen_height - 100)
     cpu2 = Paddle(25, gmv.screen_height // 2 - 20)
