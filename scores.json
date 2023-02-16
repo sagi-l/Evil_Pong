@@ -1,45 +1,21 @@
 {
     "scores": [
         {
-            "date": "2023-02-14 16:48:27",
+            "date": "2023-02-16 10:49:50",
             "Player": 0,
-            "CPU": 0,
-            "difficulty": 1
-        },
-        {
-            "date": "2023-02-14 16:48:43",
-            "Player": 0,
-            "CPU": 0,
+            "CPU": 1,
             "difficulty": 2
         },
         {
-            "date": "2023-02-14 16:49:56",
+            "date": "2023-02-16 10:58:23",
             "Player": 0,
-            "CPU": 6,
-            "difficulty": 3
-        },
-        {
-            "date": "2023-02-14 16:52:55",
-            "Player": 0,
-            "CPU": 0,
+            "CPU": 1,
             "difficulty": 2
         },
         {
-            "date": "2023-02-14 16:52:57",
+            "date": "2023-02-16 10:58:48",
             "Player": 0,
-            "CPU": 0,
-            "difficulty": 2
-        },
-        {
-            "date": "2023-02-14 16:59:54",
-            "Player": 0,
-            "CPU": 0,
-            "difficulty": 2
-        },
-        {
-            "date": "2023-02-14 16:59:55",
-            "Player": 0,
-            "CPU": 0,
+            "CPU": 1,
             "difficulty": 2
         }
     ]

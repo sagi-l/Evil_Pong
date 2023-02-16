@@ -1,8 +1,6 @@
 import math
 import random
-import sys
 from datetime import datetime
-import pygame.time
 from pygame.locals import *
 from menu import *
 from GameStat import *
@@ -19,23 +17,6 @@ difficulty = gs2.difficulty
 random_num = gmv.random_num
 bg = gmv.bg
 bg2 = gmv.bg2
-
-
-# function to write the scores to a file
-def write_score_to_json(player_score, cpu_score, difficulty):
-    # get current date
-    date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    try:
-        with open("scores.json", "r") as score_file:
-            data = json.load(score_file)
-    except (FileNotFoundError, json.decoder.JSONDecodeError):
-        data = {"scores": []}
-
-    data["scores"].append({"date": date, "Player": gmv.player_score, "CPU": gmv.cpu_score, "difficulty": difficulty})
-
-    with open("scores.json", "w") as score_file:
-        json.dump(data, score_file, separators=(",", ": "), indent=4)
-        score_file.write("\n")
 
 
 class Paddle:
@@ -93,7 +74,7 @@ class Paddle:
     def reset(self, x, y):
         self.x = x
         self.y = y
-        # defining the size and width of the paddels:
+        # defining the size and width of the paddles:
         self.rect = Rect(self.x, self.y, 8, 60)
         self.speed = 5
         self.ai_speed = 5
@@ -112,7 +93,7 @@ class StaticPaddle(Paddle):
         self.rect = Rect(self.x, self.y, 8, 100)
 
 
-class Ball():
+class Ball:
 
     def __init__(self, x, y):
         self.reset(x, y)
@@ -144,6 +125,7 @@ class Ball():
 
         return self.winner
 
+    # collision detection with static paddles from a random event
     def static1(self):
 
         if self.rect.colliderect(game_object.static_paddle1) or self.rect.colliderect(game_object.static_paddle2):
@@ -157,6 +139,7 @@ class Ball():
         pygame.draw.circle(gmv.screen, gmv.violet, (self.rect.x + self.ball_rad, self.rect.y + self.ball_rad),
                            self.ball_rad)
 
+    # ball size change random event
     def ball_size(self):
 
         self.max_size = 100
@@ -192,7 +175,7 @@ class Ball():
 
 
 class GameObjects:
-    # create puddles:
+    # create paddles:
     player_paddle = Paddle(gmv.screen_width - 40, gmv.screen_height // 2 - 20)
     static_paddle1 = StaticPaddle(300, gmv.screen_height // 10)
     static_paddle2 = StaticPaddle(300, gmv.screen_height - 100)
@@ -204,7 +187,7 @@ class GameObjects:
     pong4 = Ball(gmv.screen_width - 80, gmv.screen_height // 2 + 15)
 
 
-game_object = GameObjects()
+game_object = GameObjects
 
 
 # general game functions
@@ -259,6 +242,23 @@ def objects_reset():
     game_object.pong2.reset(gmv.screen_width - 300, gmv.screen_height // 2 + 5)
     game_object.pong3.reset(gmv.screen_width - 300, gmv.screen_height // 2 + 5)
     game_object.pong4.reset(gmv.screen_width - 300, gmv.screen_height // 2 + 5)
+
+
+# function to write the scores to a file
+def write_score_to_json(player_score, cpu_score, difficulty):
+    # get current date
+    date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    try:
+        with open("scores.json", "r") as score_file:
+            data = json.load(score_file)
+    except (FileNotFoundError, json.decoder.JSONDecodeError):
+        data = {"scores": []}
+
+    data["scores"].append({"date": date, "Player": gmv.player_score, "CPU": gmv.cpu_score, "difficulty": difficulty})
+
+    with open("scores.json", "w") as score_file:
+        json.dump(data, score_file, separators=(",", ": "), indent=4)
+        score_file.write("\n")
 
 
 # main game loop
