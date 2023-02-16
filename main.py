@@ -1,13 +1,17 @@
+import os
 import math
 import random
 from datetime import datetime
 import pygame.time
+import pygame.mixer
+import pygame.mixer_music
 from pygame.locals import *
 from menu import *
 from GameStat import *
 from GeneralMainVariables import *
 # initiating pygame
 pygame.init()
+pygame.mixer.init()
 pygame.display.set_caption("Evil Pong")
 
 # initiating GameState class
@@ -16,7 +20,13 @@ gmv = GeneralMainVariables()
 difficulty = gs2.difficulty
 random_num = gmv.random_num
 
+pygame.mixer.init()
+sound1 = pygame.mixer.Sound('Assets/1.wav')
+sound2 = pygame.mixer.Sound('Assets/2.wav')
+sound3 = pygame.mixer.Sound('Assets/3.wav')
 
+sound2.set_volume(20)
+sound3.set_volume(50)
 class Paddle:
     color_1 = (200, 200, 200)
 
@@ -102,18 +112,41 @@ class Ball:
         # check collision with top gmv.margin
         if self.rect.top < gmv.margin:
             self.speed_y *= -1
+            sound2.set_volume(0.5)
+            sound2.play()
         # check collision with bottom of the screen
         if self.rect.bottom > gmv.screen_height:
             self.speed_y *= -1
-        if self.rect.colliderect(game_object.player_paddle) or self.rect.colliderect(game_object.cpu2):
-            self.speed_x *= -1
+            sound2.set_volume(0.5)
+            sound2.play()
+        # check collision with cpu paddle
+        if self.rect.colliderect(game_object.cpu2) and self.speed_x < 0:
+            if abs(self.rect.left - game_object.cpu2.rect.right) < 10:
+                self.speed_x *= -1
+            elif abs(self.rect.bottom - game_object.cpu2.rect.top) < 10 and self.speed_y > 0:
+                self.speed_x *= -1
+            elif abs(self.rect.top - game_object.cpu2.rect.bottom) < 10 and self.speed_y < 0:
+                self.speed_x *= -1
+            sound1.set_volume(0.5)
+            sound1.play()
 
+        # check collision with player paddle
+        if self.rect.colliderect(game_object.player_paddle) and self.speed_x > 0:
+            if abs(self.rect.right - game_object.player_paddle.rect.left) < 10:
+                self.speed_x *= -1
+            elif abs(self.rect.bottom - game_object.player_paddle.rect.top) < 10 and self.speed_y > 0:
+                self.speed_x *= -1
+            elif abs(self.rect.top - game_object.player_paddle.rect.bottom) < 10 and self.speed_y < 0:
+                self.speed_x *= -1
+            sound1.set_volume(0.5)
+            sound1.play()
         # check for out of bounds
         if self.rect.left < 0:
             self.winner = 1
+            sound3.play()
         if self.rect.left > gmv.screen_width:
             self.winner = -1
-
+            sound3.play()
         # update ball position and activate random movement
         if gs.random_movement:
             self.rect.y += self.speed_y
