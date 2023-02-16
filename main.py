@@ -1,22 +1,20 @@
 import math
 import random
 from datetime import datetime
+import pygame.time
 from pygame.locals import *
 from menu import *
 from GameStat import *
 from GeneralMainVariables import *
-
 # initiating pygame
 pygame.init()
 pygame.display.set_caption("Evil Pong")
 
 # initiating GameState class
-gmv = GeneralMainVariables
 gs = GameState()
+gmv = GeneralMainVariables()
 difficulty = gs2.difficulty
 random_num = gmv.random_num
-bg = gmv.bg
-bg2 = gmv.bg2
 
 
 class Paddle:
@@ -90,6 +88,7 @@ class Paddle:
 class StaticPaddle(Paddle):
     def __init__(self, x, y):
         super().__init__(x, y)
+        from pygame import Rect
         self.rect = Rect(self.x, self.y, 8, 100)
 
 
@@ -191,6 +190,9 @@ game_object = GameObjects
 
 
 # general game functions
+
+
+# creating the game board and background
 def draw_board():
     # filling the screen with one color (gmv.bg)
     gmv.screen.fill(gmv.bg)
@@ -200,7 +202,7 @@ def draw_board():
     pygame.draw.line(gmv.screen, gmv.light_grey, (0, gmv.margin), (gmv.screen_width, gmv.margin))
 
 
-# function for displaying text on screen
+# functions for displaying text on screen
 def draw_text(text, font, text_col, x, y):
     img = font.render(text, True, text_col)
     gmv.screen.blit(img, (x, y))
@@ -235,6 +237,7 @@ def speed_increase():
             game_object.pong.speed_y += 1
 
 
+# resetting game objects locations
 def objects_reset():
     game_object.player_paddle.reset(gmv.screen_width - 40, gmv.screen_height // 2 - 20)
     game_object.cpu2.reset(25, gmv.screen_height // 2 - 20)
