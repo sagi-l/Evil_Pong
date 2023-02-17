@@ -1,4 +1,3 @@
-import os
 import math
 import random
 from datetime import datetime
@@ -20,13 +19,23 @@ gmv = GeneralMainVariables()
 difficulty = gs2.difficulty
 random_num = gmv.random_num
 
+# setting up sounds
 pygame.mixer.init()
-sound1 = pygame.mixer.Sound('Assets/1.wav')
-sound2 = pygame.mixer.Sound('Assets/2.wav')
-sound3 = pygame.mixer.Sound('Assets/3.wav')
+sound1 = pygame.mixer.Sound('Assets/player_paddle_1.wav')
+sound2 = pygame.mixer.Sound('Assets/Cpu_paddle_1.wav')
+sound3 = pygame.mixer.Sound('Assets/Margin_1.wav')
+sound4 = pygame.mixer.Sound('Assets/Bottom_1.wav')
+sound5 = pygame.mixer.Sound('Assets/WON.wav')
+sound6 = pygame.mixer.Sound('Assets/LOST.wav')
+#sound effects:
+#wobble
+sound1W = pygame.mixer.Sound('Assets/player_paddle_WOB.wav')
+sound2W = pygame.mixer.Sound('Assets/Cpu_paddle_WOB.wav')
+sound3W = pygame.mixer.Sound('Assets/Margin_WOB.wav')
+sound4W = pygame.mixer.Sound('Assets/Bottom_WOB.wav')
+sound5W = pygame.mixer.Sound('Assets/WON_WOB.wav')
+sound6W = pygame.mixer.Sound('Assets/LOST_WOB.wav')
 
-sound2.set_volume(20)
-sound3.set_volume(50)
 class Paddle:
     color_1 = (200, 200, 200)
 
@@ -112,25 +121,39 @@ class Ball:
         # check collision with top gmv.margin
         if self.rect.top < gmv.margin:
             self.speed_y *= -1
-            sound2.set_volume(0.5)
-            sound2.play()
+            if not gs.ball_size and not gs.ball_size2:
+                sound3.set_volume(0.5)
+                sound3.play()
+            else:
+                sound3W.set_volume(0.6)
+                sound3W.play()
         # check collision with bottom of the screen
         if self.rect.bottom > gmv.screen_height:
             self.speed_y *= -1
-            sound2.set_volume(0.5)
-            sound2.play()
+            if not gs.ball_size and not gs.ball_size2:
+                sound4.set_volume(0.5)
+                sound4.play()
+            else:
+                sound4W.set_volume(0.6)
+                sound4W.play()
         # check collision with cpu paddle
         if self.rect.colliderect(game_object.cpu2):
             if abs(self.rect.left - game_object.cpu2.rect.right) < 10:
                 self.speed_x *= -1
+                if gs.evil_score:
+                    gmv.cpu_score += 1
             elif abs(self.rect.bottom - game_object.cpu2.rect.top) < 10 and self.speed_y > 0:
                 self.speed_x *= -1
                 self.speed_y *= -1
             elif abs(self.rect.top - game_object.cpu2.rect.bottom) < 10 and self.speed_y < 0:
                 self.speed_x *= -1
                 self.speed_y *= -1
-            sound1.set_volume(0.5)
-            sound1.play()
+            if not gs.ball_size and not gs.ball_size2:
+                sound2.set_volume(0.5)
+                sound2.play()
+            else:
+                sound2W.set_volume(0.6)
+                sound2W.play()
 
         # check collision with player paddle
         if self.rect.colliderect(game_object.player_paddle) and self.speed_x > 0:
@@ -142,15 +165,19 @@ class Ball:
             elif abs(self.rect.top - game_object.player_paddle.rect.bottom) < 20 and self.speed_y < 0:
                 self.speed_x *= -1
                 self.speed_y *= -1
-            sound1.set_volume(0.5)
-            sound1.play()
+            if not gs.ball_size and not gs.ball_size2:
+                sound1.set_volume(0.5)
+                sound1.play()
+            else:
+                sound1W.set_volume(0.6)
+                sound1W.play()
         # check for out of bounds
         if self.rect.left < 0:
             self.winner = 1
-            sound3.play()
+
         if self.rect.left > gmv.screen_width:
             self.winner = -1
-            sound3.play()
+
         # update ball position and activate random movement
         if gs.random_movement:
             self.rect.y += self.speed_y
@@ -166,6 +193,15 @@ class Ball:
 
         if self.rect.colliderect(game_object.static_paddle1) or self.rect.colliderect(game_object.static_paddle2):
             self.speed_x *= -1
+            sound3.set_volume(0.5)
+            sound3.play()
+    def static2(self):
+
+        if self.rect.colliderect(game_object.static_paddle3) or self.rect.colliderect(game_object.static_paddle4)\
+                or self.rect.colliderect(game_object.static_paddle5) or self.rect.colliderect(game_object.static_paddle6):
+            self.speed_x *= -1
+            sound3.set_volume(0.5)
+            sound3.play()
 
     def draw(self):
         pygame.draw.circle(gmv.screen, gmv.light_grey, (self.rect.x + self.ball_rad, self.rect.y + self.ball_rad),
@@ -213,9 +249,16 @@ class Ball:
 class GameObjects:
     # create paddles:
     player_paddle = Paddle(gmv.screen_width - 30, gmv.screen_height // 2 - 20)
+    cpu2 = Paddle(25, gmv.screen_height // 2 - 20)
+
+    # static paddles (walls):
     static_paddle1 = StaticPaddle(300, gmv.screen_height // 10)
     static_paddle2 = StaticPaddle(300, gmv.screen_height - 100)
-    cpu2 = Paddle(25, gmv.screen_height // 2 - 20)
+    # static paddles 2 (more walls):
+    static_paddle3 = StaticPaddle(450, gmv.screen_height // 4)
+    static_paddle4 = StaticPaddle(450, gmv.screen_height - 160)
+    static_paddle5 = StaticPaddle(150, gmv.screen_height // 4)
+    static_paddle6 = StaticPaddle(150, gmv.screen_height - 160)
     # create balls:
     pong = Ball(gmv.screen_width - 60, gmv.screen_height // 2 + 15)
     pong2 = Ball(gmv.screen_width - 80, gmv.screen_height // 2 + 15)
@@ -227,8 +270,6 @@ game_object = GameObjects
 
 
 # general game functions
-
-
 # creating the game board and background
 def draw_board():
     # filling the screen with one color (gmv.bg)
@@ -252,8 +293,8 @@ def draw_text2(text, font, text_col, x, y, bg):
 
 # random events generator
 def random_gen(random_number):
-    num_list = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
-    w = [1 / 6, 1 / 6, 1 / 6, 1 / 6, 1 / 6, 1 / 6, 1 / 6, 1 / 6, 1 / 6, 1 / 6, 1 / 6, 1 / 6]
+    num_list = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]
+    w = [1 / 6, 1 / 6, 1 / 6, 1 / 6, 1 / 6, 1 / 6, 1 / 6, 1 / 6, 1 / 6, 1 / 6, 1 / 6, 1 / 6, 1 / 6, 1 / 6]
     for i in range(1):
         choice = (random.choices(num_list, w, k=1))
     return choice
@@ -265,7 +306,6 @@ def speed_increase():
         gmv.speed_increase = 0
         if game_object.pong.speed_x < 0:
             game_object.pong.speed_x -= 1
-
         if game_object.pong.speed_x > 0:
             game_object.pong.speed_x += 1
         if game_object.pong.speed_y < 0:
@@ -276,7 +316,7 @@ def speed_increase():
 
 # resetting game objects locations
 def objects_reset():
-    game_object.player_paddle.reset(gmv.screen_width - 40, gmv.screen_height // 2 - 20)
+    game_object.player_paddle.reset(gmv.screen_width - 30, gmv.screen_height // 2 - 20)
     game_object.cpu2.reset(25, gmv.screen_height // 2 - 20)
     game_object.pong.reset(gmv.screen_width - 300, gmv.screen_height // 2 + 5)
     game_object.pong2.reset(gmv.screen_width - 300, gmv.screen_height // 2 + 5)
@@ -351,25 +391,60 @@ while gs2.run:
                 game_object.static_paddle1.draw2()
                 game_object.static_paddle2.draw2()
                 game_object.pong.static1()
+            # adding more static paddles (as walls)
+            if gs.static2:
+                game_object.static_paddle3.draw2()
+                game_object.static_paddle3.update()
+                game_object.static_paddle4.draw2()
+                game_object.static_paddle4.update()
+                game_object.static_paddle5.draw2()
+                game_object.static_paddle5.update()
+                game_object.static_paddle6.draw2()
+                game_object.static_paddle6.update()
+                game_object.pong.static2()
+
 
             # move paddles
-            game_object.player_paddle.move()
-            game_object.cpu2.ai()
+            if gs.reverse_roles:
+                game_object.player_paddle.ai()
+                game_object.cpu2.move()
+            else:
+                game_object.player_paddle.move()
+                game_object.cpu2.ai()
 
         else:
             gmv.live_ball = False
-            if gmv.winner == 1:
-                gmv.player_score += 1
-                gmv.zz = False
-            elif gmv.winner == -1:
-                gmv.cpu_score += 1
-                gmv.z = False
+            if not gs.reverse_roles:
+                if gmv.winner == 1:
+                    if not gs.ball_size2 and not gs.ball_size:
+                        sound5.set_volume(0.5)
+                        sound5.play()
+                    else:
+                        sound5W.set_volume(0.6)
+                        sound5W.play()
+                    gmv.player_score += 1
+                    gmv.zz = False
+                elif gmv.winner == -1:
+                    if not gs.ball_size2 and not gs.ball_size:
+                        sound6.set_volume(0.5)
+                        sound6.play()
+                    else:
+                        sound6W.set_volume(0.6)
+                        sound6W.play()
+                    gmv.cpu_score += 1
+                    gmv.z = False
+            else:
+                if gmv.winner == -1:
+                    gmv.player_score += 1
+                    gmv.z = False
+                elif gmv.winner == 1:
+                    gmv.cpu_score += 1
+                    gmv.zz = False
 
     # txt on screen while reset
     if not gmv.live_ball:
         if gmv.winner == 0:
             draw_text2('CLICK ANYWHERE TO START', gmv.font2, gmv.deep_sky, 160, gmv.screen_height // 2 - 6, gmv.bg)
-
         if gmv.winner == 1:
             draw_text('YOU SCORED!', gmv.font, gmv.violet, 390, 15)
             draw_text2('CLICK ANYWHERE TO START', gmv.font2, gmv.deep_sky, 160, gmv.screen_height // 2 - 6, gmv.bg)
@@ -401,7 +476,8 @@ while gs2.run:
         print(gs2.difficulty)
         # resetting events triggers every time the game start
         gs = GameState()
-
+        # resetting FPS after the FPS change random event
+        gmv.fps = 60
         # difficulty selector
         if gs2.difficulty == 1:
 
@@ -413,7 +489,7 @@ while gs2.run:
             gs2.run = True
             choice2 = random_gen(random_num)
             print(f"first random: {choice2}")
-            if choice2 == [2] or choice2 == [4] or choice2 == [6]:
+            if choice2 == [2] or choice2 == [4] or choice2 == [6] or choice2 ==[10]:
                 choice = random_gen(random_num)
             else:
                 choice = None
@@ -421,7 +497,8 @@ while gs2.run:
             choice2 = random_gen(random_num)
             print(f"first random: {choice2}")
             if choice2 == [1] or choice2 == [3] or choice2 == [5] or choice2 == [7] \
-                    or choice2 == [9] or choice2 == [11]:
+                    or choice2 == [9] or choice2 == [11] or choice2 ==[12] or choice2 == [13]\
+                    or choice2 == [14] or choice2 == [15]:
                 choice = random_gen(random_num)
             else:
                 choice = None
@@ -440,6 +517,7 @@ while gs2.run:
             gs.ball_size2 = True
             print(choice)
         if choice == [5]:
+            gmv.fps = 40
             gs.ball_size = True
             print(choice)
         if choice == [6]:
@@ -454,21 +532,32 @@ while gs2.run:
         if choice == [9]:
             gs.player_size = True
             print(choice)
-        # mixed events:
         if choice == [10]:
-            gs.ball_size = True
-            gs.reverse_keys = True
+
+            gs.random_movement
             print(choice)
         if choice == [11]:
-            gs.ball_size2 = True
-            gs.invisible = True
+            gs.reverse_roles = True
             print(choice)
         if choice == [12]:
-            gs.ai_size = True
-            gs.static = True
-            gs.random_movement = True
+            gs.static2 = True
             print(choice)
+        # mixed events:
+        if choice == [13]:
 
+            gs.static = True
+            gs.static2 = True
+            print(choice)
+        if choice == [14]:
+            gs.static = True
+            gs.static = True
+            gs.many_balls = True
+            print(choice)
+        if choice == [15]:
+            gs.evil_score = True
+            gs.reverse_keys = True
+            gs.reverse_roles = True
+            print("super evil")
         objects_reset()
 
         gmv.z = True
