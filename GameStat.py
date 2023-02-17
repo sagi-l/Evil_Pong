@@ -3,7 +3,7 @@ class GameState:
 
     def __init__(self, player_size=False, many_balls=False, ai_size=False, reverse_keys=False,
                  random_movement=False, invisible=False, ball_size=False,
-                 ball_size2=False, static=False):
+                 ball_size2=False, static=False, static2=False, reverse_roles=False):
         self.ai_size = ai_size
         self.many_balls = many_balls
         self.player_size = player_size
@@ -13,6 +13,8 @@ class GameState:
         self.ball_size = ball_size
         self.ball_size2 = ball_size2
         self.static = static
+        self.static2 = static2
+        self.reverse_roles = reverse_roles
         # game difficulty
 
 
@@ -24,4 +26,4 @@ class SecondGameState:
     run_start = True
     run_options = True
     run_scores = True
-    random_event_msg = False
+
