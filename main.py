@@ -21,20 +21,7 @@ random_num = gmv.random_num
 
 # setting up sounds
 pygame.mixer.init()
-sound1 = pygame.mixer.Sound('Assets/player_paddle_1.wav')
-sound2 = pygame.mixer.Sound('Assets/Cpu_paddle_1.wav')
-sound3 = pygame.mixer.Sound('Assets/Margin_1.wav')
-sound4 = pygame.mixer.Sound('Assets/Bottom_1.wav')
-sound5 = pygame.mixer.Sound('Assets/WON.wav')
-sound6 = pygame.mixer.Sound('Assets/LOST.wav')
-#sound effects:
-#wobble
-sound1W = pygame.mixer.Sound('Assets/player_paddle_WOB.wav')
-sound2W = pygame.mixer.Sound('Assets/Cpu_paddle_WOB.wav')
-sound3W = pygame.mixer.Sound('Assets/Margin_WOB.wav')
-sound4W = pygame.mixer.Sound('Assets/Bottom_WOB.wav')
-sound5W = pygame.mixer.Sound('Assets/WON_WOB.wav')
-sound6W = pygame.mixer.Sound('Assets/LOST_WOB.wav')
+
 
 class Paddle:
     color_1 = (200, 200, 200)
@@ -122,20 +109,16 @@ class Ball:
         if self.rect.top < gmv.margin:
             self.speed_y *= -1
             if not gs.ball_size and not gs.ball_size2:
-                sound3.set_volume(0.5)
-                sound3.play()
+                gs2.channel.play(gs2.sound3)
             else:
-                sound3W.set_volume(0.6)
-                sound3W.play()
+                gs2.channel.play(gs2.sound3W)
         # check collision with bottom of the screen
         if self.rect.bottom > gmv.screen_height:
             self.speed_y *= -1
             if not gs.ball_size and not gs.ball_size2:
-                sound4.set_volume(0.5)
-                sound4.play()
+                gs2.channel.play(gs2.sound4)
             else:
-                sound4W.set_volume(0.6)
-                sound4W.play()
+                gs2.channel.play(gs2.sound4W)
         # check collision with cpu paddle
         if self.rect.colliderect(game_object.cpu2):
             if abs(self.rect.left - game_object.cpu2.rect.right) < 10:
@@ -149,11 +132,9 @@ class Ball:
                 self.speed_x *= -1
                 self.speed_y *= -1
             if not gs.ball_size and not gs.ball_size2:
-                sound2.set_volume(0.5)
-                sound2.play()
+                gs2.channel.play(gs2.sound2)
             else:
-                sound2W.set_volume(0.6)
-                sound2W.play()
+                gs2.channel.play(gs2.sound2W)
 
         # check collision with player paddle
         if self.rect.colliderect(game_object.player_paddle) and self.speed_x > 0:
@@ -166,11 +147,11 @@ class Ball:
                 self.speed_x *= -1
                 self.speed_y *= -1
             if not gs.ball_size and not gs.ball_size2:
-                sound1.set_volume(0.5)
-                sound1.play()
+
+                gs2.channel.play(gs2.sound1)
             else:
-                sound1W.set_volume(0.6)
-                sound1W.play()
+
+                gs2.channel.play(gs2.sound1W)
         # check for out of bounds
         if self.rect.left < 0:
             self.winner = 1
@@ -193,15 +174,14 @@ class Ball:
 
         if self.rect.colliderect(game_object.static_paddle1) or self.rect.colliderect(game_object.static_paddle2):
             self.speed_x *= -1
-            sound3.set_volume(0.5)
-            sound3.play()
+
+            gs2.channel.play(gs2.sound3)
     def static2(self):
 
         if self.rect.colliderect(game_object.static_paddle3) or self.rect.colliderect(game_object.static_paddle4)\
                 or self.rect.colliderect(game_object.static_paddle5) or self.rect.colliderect(game_object.static_paddle6):
             self.speed_x *= -1
-            sound3.set_volume(0.5)
-            sound3.play()
+            gs2.channel.play(gs2.sound3)
 
     def draw(self):
         pygame.draw.circle(gmv.screen, gmv.light_grey, (self.rect.x + self.ball_rad, self.rect.y + self.ball_rad),
@@ -327,14 +307,15 @@ def objects_reset():
 # function to write the scores to a file
 def write_score_to_json(player_score, cpu_score, difficulty):
     # get current date
-    date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    date = datetime.now().strftime("%Y-%m-%d %H:%M")
     try:
         with open("scores.json", "r") as score_file:
             data = json.load(score_file)
     except (FileNotFoundError, json.decoder.JSONDecodeError):
         data = {"scores": []}
 
-    data["scores"].append({"date": date, "Player": gmv.player_score, "CPU": gmv.cpu_score, "difficulty": difficulty})
+    data["scores"].append({"date": date, "Player": gmv.player_score, "CPU": gmv.cpu_score, "difficulty": difficulty,
+                           "rounds": gmv.rounds})
 
     with open("scores.json", "w") as score_file:
         json.dump(data, score_file, separators=(",", ": "), indent=4)
@@ -351,7 +332,8 @@ while gs2.run:
     draw_board()
     draw_text('CPU: ' + str(gmv.cpu_score), gmv.font, gmv.light_grey, 30, 15)
     draw_text(gmv.p1 + str(gmv.player_score), gmv.font, gmv.light_grey, gmv.screen_width - 70, 15)
-    draw_text('Ball Speed: ' + str(abs(game_object.pong.speed_x)), gmv.font, gmv.light_grey, 255, 15)
+    draw_text('Speed: ' + str(abs(game_object.pong.speed_x)-2), gmv.font, gmv.light_grey, 310, 15)
+    draw_text('Rounds: ' + str(gmv.rounds),gmv.font, gmv.light_grey, 225, 15)
     # drawing the two puddles:
     game_object.player_paddle.draw(Paddle.color_1)
     game_object.cpu2.draw2()
@@ -417,28 +399,28 @@ while gs2.run:
             if not gs.reverse_roles:
                 if gmv.winner == 1:
                     if not gs.ball_size2 and not gs.ball_size:
-                        sound5.set_volume(0.5)
-                        sound5.play()
+                        gs2.channel.play(gs2.sound5)
                     else:
-                        sound5W.set_volume(0.6)
-                        sound5W.play()
+                        gs2.channel.play(gs2.sound5W)
                     gmv.player_score += 1
+                    gmv.rounds += 1
                     gmv.zz = False
                 elif gmv.winner == -1:
                     if not gs.ball_size2 and not gs.ball_size:
-                        sound6.set_volume(0.5)
-                        sound6.play()
+                        gs2.channel.play(gs2.sound6)
                     else:
-                        sound6W.set_volume(0.6)
-                        sound6W.play()
+                        gs2.channel.play(gs2.sound6W)
                     gmv.cpu_score += 1
+                    gmv.rounds += 1
                     gmv.z = False
             else:
                 if gmv.winner == -1:
                     gmv.player_score += 1
+
                     gmv.z = False
                 elif gmv.winner == 1:
                     gmv.cpu_score += 1
+                    gmv.rounds += 1
                     gmv.zz = False
 
     # txt on screen while reset
@@ -446,9 +428,11 @@ while gs2.run:
         if gmv.winner == 0:
             draw_text2('CLICK ANYWHERE TO START', gmv.font2, gmv.deep_sky, 160, gmv.screen_height // 2 - 6, gmv.bg)
         if gmv.winner == 1:
+
             draw_text('YOU SCORED!', gmv.font, gmv.violet, 390, 15)
             draw_text2('CLICK ANYWHERE TO START', gmv.font2, gmv.deep_sky, 160, gmv.screen_height // 2 - 6, gmv.bg)
         if gmv.winner == -1:
+
             draw_text('CPU SCORED!', gmv.font, gmv.violet, 110, 15)
             draw_text2('CLICK ANYWHERE TO START', gmv.font2, gmv.deep_sky, 160, gmv.screen_height // 2 - 6, gmv.bg)
 
@@ -460,6 +444,7 @@ while gs2.run:
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_ESCAPE:
                 write_score_to_json(gmv.player_score, gmv.cpu_score, difficulty)
+                gmv.rounds = 0
                 gs2.run2 = True
                 gs2.run = False
                 run2()
@@ -533,8 +518,7 @@ while gs2.run:
             gs.player_size = True
             print(choice)
         if choice == [10]:
-
-            gs.random_movement
+            gs.evil_score = True
             print(choice)
         if choice == [11]:
             gs.reverse_roles = True
@@ -544,9 +528,9 @@ while gs2.run:
             print(choice)
         # mixed events:
         if choice == [13]:
-
-            gs.static = True
+            gs.invisible = True
             gs.static2 = True
+            gs.ai_size = True
             print(choice)
         if choice == [14]:
             gs.static = True
@@ -554,7 +538,7 @@ while gs2.run:
             gs.many_balls = True
             print(choice)
         if choice == [15]:
-            gs.evil_score = True
+            gs.ball_size2 = True
             gs.reverse_keys = True
             gs.reverse_roles = True
             print("super evil")

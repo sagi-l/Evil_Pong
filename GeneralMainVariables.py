@@ -1,5 +1,5 @@
 import pygame
-
+import pygame.mixer
 
 # general variables for the main game
 class GeneralMainVariables:
@@ -57,3 +57,5 @@ class GeneralMainVariables:
     # define font:
     font = pygame.font.SysFont('Helvetica', 18)
     font2 = pygame.font.SysFont('Helvetica', 24)
+
+    rounds = 0

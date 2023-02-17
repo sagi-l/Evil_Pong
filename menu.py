@@ -1,5 +1,6 @@
 import sys
 import pygame
+import pygame_gui
 import json
 from GameStat import *
 
@@ -19,6 +20,20 @@ class GeneralMenuVariables:
     screen_width = 600
     screen_height = 500
     screen = pygame.display.set_mode((screen_width, screen_height))
+    manager = pygame_gui.UIManager((screen_width, screen_height))
+    # Create a slider
+    slider = pygame_gui.elements.UIHorizontalSlider(
+        relative_rect=pygame.Rect((220, 220), (150, 20)),
+        start_value=0.5,
+        value_range=(0, 1.0),
+        manager=manager
+    )
+    slider2 = pygame_gui.elements.UIHorizontalSlider(
+        relative_rect=pygame.Rect((220, 290), (150, 20)),
+        start_value=0.5,
+        value_range=(0, 1.0),
+        manager=manager
+    )
 
 
 # initiate the classes
@@ -28,6 +43,7 @@ gv = GeneralMenuVariables()
 
 def game_exit():
     for event in pygame.event.get():
+
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_ESCAPE:
                 gs2.run_start = False
@@ -104,16 +120,31 @@ def start_screen():
 def options():
     print("options screen")
     while gs2.run_options:
+        time_delta = pygame.time.Clock().tick(60) / 1000.0
+        slider_value = gv.slider2.get_current_value()
         pygame.display.set_caption("Evil Pong Options Menu")
         gv.screen.fill((36, 36, 36))
 
         # draw text on screen
-        draw_text("Music ON/OFF", gv.font, gv.violet, 230, 200)
-        draw_text("Sound ON/OFF", gv.font, gv.violet, 230, 240)
-        draw_text("Press ESC to return to main menu", gv.font, gv.light_violet, 160, 300)
+        draw_text("Music", gv.font, gv.violet, 270, 180)
+        draw_text("Sound", gv.font, gv.violet, 270, 250)
+        draw_text("Press ESC to return to main menu", gv.font, gv.light_violet, 160, 450)
+
+        gv.manager.draw_ui(gv.screen)
+
+        for event in pygame.event.get():
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    gs2.run_options = False
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+
+            gv.manager.process_events(event)
+            gs2.channel.set_volume(slider_value)
+        gv.manager.update(time_delta)
 
         game_exit()
-
         pygame.display.update()
 
 
@@ -123,7 +154,7 @@ def scores():
 
         pygame.display.set_caption("Evil Pong Scores Menu")
         gv.screen.fill((36, 36, 36))
-        draw_text("Press ESC to return to main menu", gv.font, gv.violet, 160, 450)
+        draw_text("Press ESC to return to main menu", gv.font, gv.light_violet, 160, 450)
         try:
             with open("scores.json", "r") as scores:
                 data = json.load(scores)
@@ -141,10 +172,11 @@ def scores():
             player_score = score["Player"]
             cpu_score = score["CPU"]
             difficulty = score["difficulty"]
+            rounds = score["rounds"]
 
-            text = gv.font.render(f"{date}: Player: {player_score}, CPU: {cpu_score}, Difficulty: {difficulty}", True,
-                                  (255, 255, 255))
-            gv.screen.blit(text, (80, y))
+            text = gv.font.render(f"{date}: Player: {player_score}, CPU: {cpu_score}, Difficulty: {difficulty}, Rounds: {rounds}", True,
+                                  (200, 80, 240))
+            gv.screen.blit(text, (40, y))
             y += 50
 
         game_exit()
@@ -171,6 +203,7 @@ def run2(game_paused=False):
     pygame.display.set_caption("Evil Pong Main Menu")
     # game variables
     while gs2.run2:
+
         gv.screen.fill((36, 36, 36))
         gs2.run_start = True
         gs2.run_options = True
@@ -226,6 +259,9 @@ def run2(game_paused=False):
                 draw_text("Exit", gv.font, gv.violet, 285, 320)
 
         for event in pygame.event.get():
+
+
+
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_p:
                     game_paused = True
@@ -243,6 +279,7 @@ def run2(game_paused=False):
                 gs2.run2 = False
                 gs2.run = False
                 sys.exit()
+
         pygame.display.update()
 
 
