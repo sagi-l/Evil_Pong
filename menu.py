@@ -133,9 +133,12 @@ def options():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
-
+            # get value from the slider
             gv.manager.process_events(event)
-            gs2.channel.set_volume(slider_value)
+            gs2.volume = slider_value
+            # loop for setting the volume of all the sounds in the "sounds" list
+            for sound in gs2.sounds:
+                sound.set_volume(gs2.volume)
         gv.manager.update(time_delta)
 
         game_exit()
@@ -203,9 +206,12 @@ def run2(game_paused=False):
     # setting up the game menu screen
 
     pygame.display.set_caption("Evil Pong Main Menu")
-    # game variables
+    # setting up the game sounds volume:
     while gs2.run2:
+        for sound in gs2.sounds:
+            sound.set_volume(gs2.volume)
 
+        # game variables
         gv.screen.fill((36, 36, 36))
         gs2.run_start = True
         gs2.run_options = True
