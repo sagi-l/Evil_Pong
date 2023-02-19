@@ -6,7 +6,7 @@ import pygame.mixer
 import pygame.mixer_music
 from pygame.locals import *
 from menu import *
-from GameStat import *
+from GameState import *
 from GeneralMainVariables import *
 # initiating pygame
 pygame.init()
@@ -314,8 +314,8 @@ def write_score_to_json(player_score, cpu_score, difficulty):
     except (FileNotFoundError, json.decoder.JSONDecodeError):
         data = {"scores": []}
 
-    data["scores"].append({"date": date, "Player": gmv.player_score, "CPU": gmv.cpu_score, "difficulty": difficulty,
-                           "rounds": gmv.rounds})
+    data["scores"].append({"date": date, "Player": gs2.player_score, "CPU": gs2.cpu_score, "difficulty": difficulty,
+                           "rounds": gs2.rounds})
 
     with open("scores.json", "w") as score_file:
         json.dump(data, score_file, separators=(",", ": "), indent=4)
@@ -330,10 +330,10 @@ while gs2.run:
     gmv.timer += 1
     gmv.fpsClock.tick(gmv.fps)
     draw_board()
-    draw_text('CPU: ' + str(gmv.cpu_score), gmv.font, gmv.light_grey, 30, 15)
-    draw_text(gmv.p1 + str(gmv.player_score), gmv.font, gmv.light_grey, gmv.screen_width - 70, 15)
+    draw_text('CPU: ' + str(gs2.cpu_score), gmv.font, gmv.light_grey, 30, 15)
+    draw_text(gmv.p1 + str(gs2.player_score), gmv.font, gmv.light_grey, gmv.screen_width - 70, 15)
     draw_text('Speed: ' + str(abs(game_object.pong.speed_x)-2), gmv.font, gmv.light_grey, 310, 15)
-    draw_text('Rounds: ' + str(gmv.rounds),gmv.font, gmv.light_grey, 225, 15)
+    draw_text('Rounds: ' + str(gs2.rounds),gmv.font, gmv.light_grey, 225, 15)
     # drawing the two puddles:
     game_object.player_paddle.draw(Paddle.color_1)
     game_object.cpu2.draw2()
@@ -402,25 +402,25 @@ while gs2.run:
                         gs2.channel.play(gs2.sound5)
                     else:
                         gs2.channel.play(gs2.sound5W)
-                    gmv.player_score += 1
-                    gmv.rounds += 1
+                    gs2.player_score += 1
+                    gs2.rounds += 1
                     gmv.zz = False
                 elif gmv.winner == -1:
                     if not gs.ball_size2 and not gs.ball_size:
                         gs2.channel.play(gs2.sound6)
                     else:
                         gs2.channel.play(gs2.sound6W)
-                    gmv.cpu_score += 1
-                    gmv.rounds += 1
+                    gs2.cpu_score += 1
+                    gs2.rounds += 1
                     gmv.z = False
             else:
                 if gmv.winner == -1:
-                    gmv.player_score += 1
+                    gs2.player_score += 1
 
                     gmv.z = False
                 elif gmv.winner == 1:
-                    gmv.cpu_score += 1
-                    gmv.rounds += 1
+                    gs2.cpu_score += 1
+                    gs2.rounds += 1
                     gmv.zz = False
 
     # txt on screen while reset
@@ -439,12 +439,11 @@ while gs2.run:
     for event in pygame.event.get():
 
         if event.type == pygame.QUIT:
-            write_score_to_json(gmv.player_score, gmv.cpu_score, difficulty)
+            write_score_to_json(gs2.player_score, gmv.cpu_score, difficulty)
             gs2.run = False
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_ESCAPE:
-                write_score_to_json(gmv.player_score, gmv.cpu_score, difficulty)
-                gmv.rounds = 0
+                write_score_to_json(gs2.player_score, gmv.cpu_score, difficulty)
                 gs2.run2 = True
                 gs2.run = False
                 run2()
@@ -458,6 +457,7 @@ while gs2.run:
 
     if event.type == pygame.MOUSEBUTTONDOWN and not gmv.live_ball:
         gmv.live_ball = True
+
         print(gs2.difficulty)
         # resetting events triggers every time the game start
         gs = GameState()
@@ -465,10 +465,8 @@ while gs2.run:
         gmv.fps = 60
         # difficulty selector
         if gs2.difficulty == 1:
-
             print(gs2.difficulty)
             choice = None
-
         elif gs2.difficulty == 2:
 
             gs2.run = True

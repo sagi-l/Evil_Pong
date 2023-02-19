@@ -29,6 +29,10 @@ class SecondGameState:
     run_start = True
     run_options = True
     run_scores = True
+    cpu_score = 0
+    player_score = 0
+    rounds = 0
+
 
     channel = pygame.mixer.Channel(0)
     sound1 = pygame.mixer.Sound('Assets/player_paddle_1.wav')

@@ -2,7 +2,7 @@ import sys
 import pygame
 import pygame_gui
 import json
-from GameStat import *
+from GameState import *
 
 # menu file variables
 pygame.init()
@@ -39,7 +39,6 @@ class GeneralMenuVariables:
 # initiate the classes
 gs2 = SecondGameState()
 gv = GeneralMenuVariables()
-
 
 def game_exit():
     for event in pygame.event.get():
@@ -81,36 +80,31 @@ def start_screen():
                 print("difficulty 1 selected")
                 gs2.difficulty = 1
                 print(gs2.difficulty)
-                gs2.run_start = False
-                gs2.run2 = False
-
+                reset_vars()
         else:
             draw_text("Difficulty 1 - no random events", gv.font, gv.violet, 160, 150)
 
         if diff_2.collidepoint(mouse_pos):
-            draw_text("Diffuculty 2 - Some random events", gv.font, gv.light_violet, 150, 220)
+            draw_text("Diffuculty 2 - Some random events", gv.font, gv.light_violet, 150, 222)
 
             if pygame.mouse.get_pressed()[0]:
                 print("difficulty 2 selected")
                 gs2.difficulty = 2
                 print(gs2.difficulty)
-                gs2.run_start = False
-                gs2.run2 = False
-
+                reset_vars()
         else:
-            draw_text("Diffuculty 2 - Some random events", gv.font, gv.violet, 150, 220)
+            draw_text("Diffuculty 2 - Some random events", gv.font, gv.violet, 150, 222)
 
         if diff_3.collidepoint(mouse_pos):
-            draw_text("Difficulty 3 - May the gods of probability save you", gv.font, gv.light_violet, 100, 280)
+            draw_text("Difficulty 3 - May the gods of probability save you", gv.font, gv.light_violet, 100, 290)
 
             if pygame.mouse.get_pressed()[0]:
                 print("difficulty 3 selected")
                 gs2.difficulty = 3
                 print(gs2.difficulty)
-                gs2.run_start = False
-                gs2.run2 = False
+                reset_vars()
         else:
-            draw_text("Difficulty 3 - May the gods of probability save you", gv.font, gv.violet, 100, 280)
+            draw_text("Difficulty 3 - May the gods of probability save you", gv.font, gv.violet, 100, 290)
 
         game_exit()
 
@@ -195,6 +189,14 @@ def draw_text(text, font, color, x, y):
 def draw_large_text(text, font, color, x, y):
     img = gv.font2.render(text, True, color)
     gv.screen.blit(img, (x, y))
+
+
+def reset_vars():
+    gs2.run_start = False
+    gs2.run2 = False
+    gs2.player_score = 0
+    gs2.cpu_score = 0
+    gs2.rounds = 0
 
 # Main game loop
 def run2(game_paused=False):

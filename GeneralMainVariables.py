@@ -58,4 +58,4 @@ class GeneralMainVariables:
     font = pygame.font.SysFont('Helvetica', 18)
     font2 = pygame.font.SysFont('Helvetica', 24)
 
-    rounds = 0
+
