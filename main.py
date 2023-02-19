@@ -109,16 +109,17 @@ class Ball:
         if self.rect.top < gmv.margin:
             self.speed_y *= -1
             if not gs.ball_size and not gs.ball_size2:
-                gs2.channel.play(gs2.sound3)
+                pygame.mixer.Sound.play(gs2.sounds[2])
             else:
-                gs2.channel.play(gs2.sound3W)
+                pygame.mixer.Sound.play(gs2.sounds[8])
         # check collision with bottom of the screen
         if self.rect.bottom > gmv.screen_height:
             self.speed_y *= -1
             if not gs.ball_size and not gs.ball_size2:
-                gs2.channel.play(gs2.sound4)
+                pygame.mixer.Sound.play(gs2.sounds[3])
+
             else:
-                gs2.channel.play(gs2.sound4W)
+                pygame.mixer.Sound.play(gs2.sounds[9])
         # check collision with cpu paddle
         if self.rect.colliderect(game_object.cpu2):
             if abs(self.rect.left - game_object.cpu2.rect.right) < 10:
@@ -132,9 +133,9 @@ class Ball:
                 self.speed_x *= -1
                 self.speed_y *= -1
             if not gs.ball_size and not gs.ball_size2:
-                gs2.channel.play(gs2.sound2)
+                pygame.mixer.Sound.play(gs2.sounds[1])
             else:
-                gs2.channel.play(gs2.sound2W)
+                pygame.mixer.Sound.play(gs2.sounds[7])
 
         # check collision with player paddle
         if self.rect.colliderect(game_object.player_paddle) and self.speed_x > 0:
@@ -148,10 +149,10 @@ class Ball:
                 self.speed_y *= -1
             if not gs.ball_size and not gs.ball_size2:
 
-                gs2.channel.play(gs2.sound1)
+                pygame.mixer.Sound.play(gs2.sounds[0])
             else:
 
-                gs2.channel.play(gs2.sound1W)
+                pygame.mixer.Sound.play(gs2.sounds[6])
         # check for out of bounds
         if self.rect.left < 0:
             self.winner = 1
@@ -175,13 +176,13 @@ class Ball:
         if self.rect.colliderect(game_object.static_paddle1) or self.rect.colliderect(game_object.static_paddle2):
             self.speed_x *= -1
 
-            gs2.channel.play(gs2.sound3)
+            pygame.mixer.Sound.play(gs2.sounds[3])
     def static2(self):
 
         if self.rect.colliderect(game_object.static_paddle3) or self.rect.colliderect(game_object.static_paddle4)\
                 or self.rect.colliderect(game_object.static_paddle5) or self.rect.colliderect(game_object.static_paddle6):
             self.speed_x *= -1
-            gs2.channel.play(gs2.sound3)
+            pygame.mixer.Sound.play(gs2.sounds[3])
 
     def draw(self):
         pygame.draw.circle(gmv.screen, gmv.light_grey, (self.rect.x + self.ball_rad, self.rect.y + self.ball_rad),
@@ -399,17 +400,17 @@ while gs2.run:
             if not gs.reverse_roles:
                 if gmv.winner == 1:
                     if not gs.ball_size2 and not gs.ball_size:
-                        gs2.channel.play(gs2.sound5)
+                        pygame.mixer.Sound.play(gs2.sounds[4])
                     else:
-                        gs2.channel.play(gs2.sound5W)
+                        pygame.mixer.Sound.play(gs2.sounds[10])
                     gs2.player_score += 1
                     gs2.rounds += 1
                     gmv.zz = False
                 elif gmv.winner == -1:
                     if not gs.ball_size2 and not gs.ball_size:
-                        gs2.channel.play(gs2.sound6)
+                        pygame.mixer.Sound.play(gs2.sounds[5])
                     else:
-                        gs2.channel.play(gs2.sound6W)
+                        pygame.mixer.Sound.play(gs2.sounds[11])
                     gs2.cpu_score += 1
                     gs2.rounds += 1
                     gmv.z = False
