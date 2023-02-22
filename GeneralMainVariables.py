@@ -1,7 +1,5 @@
-import pygame
-import pygame.mixer
-
 # general variables for the main game
+import pygame
 class GeneralMainVariables:
     # set up the game window
     screen_width = 600
@@ -52,7 +50,7 @@ class GeneralMainVariables:
     deep_sky = (0, 191, 255)
     red = (238, 44, 44)
     violet = (255, 62, 150)
-    violet2 = (230, 230, 50)
+    violet2 = (255, 153, 204)
 
     # define font:
     font = pygame.font.SysFont('Helvetica', 18)

@@ -8,6 +8,7 @@ from pygame.locals import *
 from menu import *
 from GameState import *
 from GeneralMainVariables import *
+
 # initiating pygame
 pygame.init()
 pygame.mixer.init()
@@ -125,7 +126,7 @@ class Ball:
             if abs(self.rect.left - game_object.cpu2.rect.right) < 10:
                 self.speed_x *= -1
                 if gs.evil_score:
-                    gmv.cpu_score += 1
+                    gs2.cpu_score += 1
             elif abs(self.rect.bottom - game_object.cpu2.rect.top) < 10 and self.speed_y > 0:
                 self.speed_x *= -1
                 self.speed_y *= -1
@@ -177,10 +178,12 @@ class Ball:
             self.speed_x *= -1
 
             pygame.mixer.Sound.play(gs2.sounds[3])
+
     def static2(self):
 
-        if self.rect.colliderect(game_object.static_paddle3) or self.rect.colliderect(game_object.static_paddle4)\
-                or self.rect.colliderect(game_object.static_paddle5) or self.rect.colliderect(game_object.static_paddle6):
+        if self.rect.colliderect(game_object.static_paddle3) or self.rect.colliderect(game_object.static_paddle4) \
+                or self.rect.colliderect(game_object.static_paddle5) or self.rect.colliderect(
+            game_object.static_paddle6):
             self.speed_x *= -1
             pygame.mixer.Sound.play(gs2.sounds[3])
 
@@ -323,9 +326,10 @@ def write_score_to_json(player_score, cpu_score, difficulty):
         score_file.write("\n")
 
 
+start_time = pygame.time.get_ticks()
+
 # main game loop
 while gs2.run:
-
     gmv.angle1 += 0.01
     gmv.angle2 += 0.01
     gmv.timer += 1
@@ -333,11 +337,15 @@ while gs2.run:
     draw_board()
     draw_text('CPU: ' + str(gs2.cpu_score), gmv.font, gmv.light_grey, 30, 15)
     draw_text(gmv.p1 + str(gs2.player_score), gmv.font, gmv.light_grey, gmv.screen_width - 70, 15)
-    draw_text('Speed: ' + str(abs(game_object.pong.speed_x)-2), gmv.font, gmv.light_grey, 310, 15)
-    draw_text('Rounds: ' + str(gs2.rounds),gmv.font, gmv.light_grey, 225, 15)
+    draw_text('Speed: ' + str(abs(game_object.pong.speed_x) - 2), gmv.font, gmv.light_grey, 310, 15)
+    draw_text('Rounds: ' + str(gs2.rounds), gmv.font, gmv.light_grey, 225, 15)
     # drawing the two puddles:
     game_object.player_paddle.draw(Paddle.color_1)
     game_object.cpu2.draw2()
+    if gs2.random_event:
+        draw_text2('RANDOM EVENT', gmv.font, gmv.violet, 240, gmv.screen_height - 440, gmv.bg)
+    else:
+        pass
 
     if gmv.live_ball:
         gmv.speed_increase += 1
@@ -386,7 +394,6 @@ while gs2.run:
                 game_object.static_paddle6.update()
                 game_object.pong.static2()
 
-
             # move paddles
             if gs.reverse_roles:
                 game_object.player_paddle.ai()
@@ -425,17 +432,6 @@ while gs2.run:
                     gmv.zz = False
 
     # txt on screen while reset
-    if not gmv.live_ball:
-        if gmv.winner == 0:
-            draw_text2('CLICK ANYWHERE TO START', gmv.font2, gmv.deep_sky, 160, gmv.screen_height // 2 - 6, gmv.bg)
-        if gmv.winner == 1:
-
-            draw_text('YOU SCORED!', gmv.font, gmv.violet, 390, 15)
-            draw_text2('CLICK ANYWHERE TO START', gmv.font2, gmv.deep_sky, 160, gmv.screen_height // 2 - 6, gmv.bg)
-        if gmv.winner == -1:
-
-            draw_text('CPU SCORED!', gmv.font, gmv.violet, 110, 15)
-            draw_text2('CLICK ANYWHERE TO START', gmv.font2, gmv.deep_sky, 160, gmv.screen_height // 2 - 6, gmv.bg)
 
     for event in pygame.event.get():
 
@@ -459,7 +455,7 @@ while gs2.run:
     if event.type == pygame.MOUSEBUTTONDOWN and not gmv.live_ball:
         gmv.live_ball = True
 
-        print(gs2.difficulty)
+        print("difficulty: ", gs2.difficulty)
         # resetting events triggers every time the game start
         gs = GameState()
         # resetting FPS after the FPS change random event
@@ -468,75 +464,94 @@ while gs2.run:
         if gs2.difficulty == 1:
             print(gs2.difficulty)
             choice = None
+            gs2.random_event = False
         elif gs2.difficulty == 2:
 
             gs2.run = True
             choice2 = random_gen(random_num)
             print(f"first random: {choice2}")
-            if choice2 == [2] or choice2 == [4] or choice2 == [6] or choice2 ==[10]:
+            if choice2 == [2] or choice2 == [4] or choice2 == [6] or choice2 == [10]:
                 choice = random_gen(random_num)
             else:
                 choice = None
+                gs2.random_event = False
         elif gs2.difficulty == 3:
             choice2 = random_gen(random_num)
             print(f"first random: {choice2}")
             if choice2 == [1] or choice2 == [3] or choice2 == [5] or choice2 == [7] \
-                    or choice2 == [9] or choice2 == [11] or choice2 ==[12] or choice2 == [13]\
+                    or choice2 == [9] or choice2 == [11] or choice2 == [12] or choice2 == [13] \
                     or choice2 == [14] or choice2 == [15]:
                 choice = random_gen(random_num)
+
             else:
                 choice = None
+                gs2.random_event = False
 
-        # random events
+                # random events
         if choice == [1]:
-            print(choice)
+            gs2.random_event = True
             gs.static = True
-        if choice == [2]:
             print(choice)
+        if choice == [2]:
+            gs2.random_event = True
             gs.random_movement = True
+            print(choice)
         if choice == [3]:
+            gs2.random_event = True
             gs.invisible = True
             print(choice)
         if choice == [4]:
+            gs2.random_event = True
             gs.ball_size2 = True
             print(choice)
         if choice == [5]:
+            gs2.random_event = True
             gmv.fps = 40
             gs.ball_size = True
             print(choice)
         if choice == [6]:
+            gs2.random_event = True
             gs.ai_size = True
             print(choice)
         if choice == [7]:
+            gs2.random_event = True
             gs.reverse_keys = True
             print(choice)
         if choice == [8]:
+            gs2.random_event = True
             gs.many_balls = True
             print(choice)
         if choice == [9]:
+            gs2.random_event = True
             gs.player_size = True
             print(choice)
         if choice == [10]:
+            gs2.random_event = True
             gs.evil_score = True
             print(choice)
         if choice == [11]:
+            gs2.random_event = True
             gs.reverse_roles = True
             print(choice)
         if choice == [12]:
+            gs2.random_event = True
             gs.static2 = True
             print(choice)
         # mixed events:
         if choice == [13]:
+            gs2.random_event = True
             gs.invisible = True
             gs.static2 = True
             gs.ai_size = True
             print(choice)
         if choice == [14]:
+            gs2.random_event = True
             gs.static = True
             gs.static = True
             gs.many_balls = True
             print(choice)
         if choice == [15]:
+            gs2.random_event = True
             gs.ball_size2 = True
             gs.reverse_keys = True
             gs.reverse_roles = True
@@ -547,5 +562,17 @@ while gs2.run:
         gmv.zz = True
 
     speed_increase()
+
+    if not gmv.live_ball:
+        if gmv.winner == 0:
+            draw_text2('CLICK ANYWHERE TO START', gmv.font2, gmv.deep_sky, 160, gmv.screen_height // 2 - 6, gmv.bg)
+
+        if gmv.winner == 1:
+            draw_text('YOU SCORED!', gmv.font, gmv.violet, 390, 15)
+            draw_text2('CLICK ANYWHERE TO START', gmv.font2, gmv.deep_sky, 160, gmv.screen_height // 2 - 6, gmv.bg)
+
+        if gmv.winner == -1:
+            draw_text('CPU SCORED!', gmv.font, gmv.violet, 110, 15)
+            draw_text2('CLICK ANYWHERE TO START', gmv.font2, gmv.deep_sky, 160, gmv.screen_height // 2 - 6, gmv.bg)
 
     pygame.display.update()

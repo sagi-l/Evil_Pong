@@ -1,6 +1,4 @@
-# class with the game variables that both the main.py and menu.py uses
-from typing import List
-
+# a class with the game variables that both the main.py and menu.py uses
 import pygame.mixer
 from pygame.mixer import Sound
 
@@ -29,6 +27,7 @@ class GameState:
 
 # a class with the game variable that both the main.py and menu.py uses and does not reset after each game
 class SecondGameState:
+    random_event = False
     difficulty = 0
     run = True
     run2 = True
