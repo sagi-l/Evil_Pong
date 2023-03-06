@@ -37,7 +37,7 @@ class SecondGameState:
     player_score = 0
     rounds = 0
     volume = 0.5
-    volume2 = 0.5
+    volume2 = 0.7
     menu_music = ('Assets/Menu_music.wav')
     #game_music =
     #random_event_music =

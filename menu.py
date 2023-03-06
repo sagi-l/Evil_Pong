@@ -146,6 +146,7 @@ def options():
             # loop for setting the volume of all the sounds in the "sounds" list
             for sound in gs2.sounds:
                 sound.set_volume(gs2.volume)
+
             pygame.mixer.music.set_volume(gs2.volume2)
 
         gv.manager.update(time_delta)
@@ -219,7 +220,6 @@ def run2(game_paused=False):
     # setting up the game menu screen
     pygame.mixer.music.load(gs2.menu_music)
     pygame.mixer.music.play(-1)
-    gs2.volume2 = 0.5
 
     pygame.display.set_caption("Evil Pong Main Menu")
     # setting up the game sounds volume:
