@@ -366,6 +366,8 @@ while gs2.run:
     if gmv.live_ball:
         gmv.speed_increase += 1
 
+        # stopping the menu_music first
+        pygame.mixer.music.stop()
         gmv.winner = game_object.pong.move()
 
         if gmv.winner == 0:

@@ -37,6 +37,11 @@ class SecondGameState:
     player_score = 0
     rounds = 0
     volume = 0.5
+    volume2 = 0.5
+    menu_music = ('Assets/Menu_music.wav')
+    #game_music =
+    #random_event_music =
+
     sounds: list[Sound] = [pygame.mixer.Sound('Assets/player_paddle_1.wav'),
                            pygame.mixer.Sound('Assets/Cpu_paddle_1.wav'), pygame.mixer.Sound('Assets/Margin_1.wav'),
                            pygame.mixer.Sound('Assets/Bottom_1.wav'), pygame.mixer.Sound('Assets/WON.wav'),

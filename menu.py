@@ -23,13 +23,13 @@ class GeneralMenuVariables:
     manager = pygame_gui.UIManager((screen_width, screen_height))
     # Create a slider
     slider = pygame_gui.elements.UIHorizontalSlider(
-        relative_rect=pygame.Rect((230, 200), (150, 20)),
-        start_value=0.5,
+        relative_rect=pygame.Rect((250, 200), (150, 20)),
+        start_value=0.7,
         value_range=(0, 1.0),
         manager=manager
     )
     slider2 = pygame_gui.elements.UIHorizontalSlider(
-        relative_rect=pygame.Rect((230, 270), (150, 20)),
+        relative_rect=pygame.Rect((250, 270), (150, 20)),
         start_value=0.5,
         value_range=(0, 1.0),
         manager=manager
@@ -117,7 +117,10 @@ def options():
         # time_delta is for the drawing the sliders in real time
         time_delta = pygame.time.Clock().tick(60) / 1000.0
         # getting the current value from the sliders
+        #sound slider
         slider_value = gv.slider2.get_current_value()
+        # music slider
+        slider_value2 = gv.slider.get_current_value()
         pygame.display.set_caption("Evil Pong Options Menu")
         gv.screen.fill((36, 36, 36))
 
@@ -138,10 +141,13 @@ def options():
             # get value from the slider
             gv.manager.process_events(event)
             gs2.volume = slider_value
+            gs2.volume2 = slider_value2
 
             # loop for setting the volume of all the sounds in the "sounds" list
             for sound in gs2.sounds:
                 sound.set_volume(gs2.volume)
+            pygame.mixer.music.set_volume(gs2.volume2)
+
         gv.manager.update(time_delta)
 
         game_exit()
@@ -211,6 +217,9 @@ def reset_vars():
 # Main game loop
 def run2(game_paused=False):
     # setting up the game menu screen
+    pygame.mixer.music.load(gs2.menu_music)
+    pygame.mixer.music.play(-1)
+    gs2.volume2 = 0.5
 
     pygame.display.set_caption("Evil Pong Main Menu")
     # setting up the game sounds volume:
@@ -274,8 +283,6 @@ def run2(game_paused=False):
                 draw_text("Exit", gv.font, gv.violet, gv.screen_width // 2, 320)
 
         for event in pygame.event.get():
-
-
 
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_p:
