@@ -17,19 +17,19 @@ class GeneralMenuVariables:
     violet = (255, 62, 150)
     light_violet = (255, 153, 204)
     # define the screen
-    screen_width = 600
+    screen_width = 650
     screen_height = 500
     screen = pygame.display.set_mode((screen_width, screen_height))
     manager = pygame_gui.UIManager((screen_width, screen_height))
     # Create a slider
     slider = pygame_gui.elements.UIHorizontalSlider(
-        relative_rect=pygame.Rect((220, 220), (150, 20)),
+        relative_rect=pygame.Rect((230, 200), (150, 20)),
         start_value=0.5,
         value_range=(0, 1.0),
         manager=manager
     )
     slider2 = pygame_gui.elements.UIHorizontalSlider(
-        relative_rect=pygame.Rect((220, 290), (150, 20)),
+        relative_rect=pygame.Rect((230, 270), (150, 20)),
         start_value=0.5,
         value_range=(0, 1.0),
         manager=manager
@@ -65,7 +65,7 @@ def start_screen():
 
         pygame.display.set_caption("Evil Pong Main Menu")
         gv.screen.fill((36, 36, 36))
-        draw_text("Press ESC to return to main menu", gv.font, gv.light_violet, 160, 450)
+        draw_text("Press ESC to return to main menu", gv.font, gv.light_violet, gv.screen_width // 2, 450)
 
         # drawing rectangles for capturing the mouse key press
         diff_1 = pygame.Rect(140, 150, 300, 30)
@@ -75,17 +75,17 @@ def start_screen():
 
         # drawing the text difficulty levels and redirecting to the main.py file
         if diff_1.collidepoint(mouse_pos):
-            draw_text("Difficulty 1 - no random events", gv.font, gv.light_violet, 160, 150)
+            draw_text("Difficulty 1 - no random events", gv.font, gv.light_violet, gv.screen_width // 2, 150)
             if pygame.mouse.get_pressed()[0]:
                 print("difficulty 1 selected")
                 gs2.difficulty = 1
                 print(gs2.difficulty)
                 reset_vars()
         else:
-            draw_text("Difficulty 1 - no random events", gv.font, gv.violet, 160, 150)
+            draw_text("Difficulty 1 - no random events", gv.font, gv.violet, gv.screen_width // 2, 150)
 
         if diff_2.collidepoint(mouse_pos):
-            draw_text("Diffuculty 2 - Some random events", gv.font, gv.light_violet, 150, 222)
+            draw_text("Diffuculty 2 - Some random events", gv.font, gv.light_violet, gv.screen_width // 2, 222)
 
             if pygame.mouse.get_pressed()[0]:
                 print("difficulty 2 selected")
@@ -93,10 +93,10 @@ def start_screen():
                 print(gs2.difficulty)
                 reset_vars()
         else:
-            draw_text("Diffuculty 2 - Some random events", gv.font, gv.violet, 150, 222)
+            draw_text("Diffuculty 2 - Some random events", gv.font, gv.violet, gv.screen_width // 2, 222)
 
         if diff_3.collidepoint(mouse_pos):
-            draw_text("Difficulty 3 - May the gods of probability save you", gv.font, gv.light_violet, 100, 290)
+            draw_text("Difficulty 3 - May the gods of probability save you", gv.font, gv.light_violet, gv.screen_width // 2, 290)
 
             if pygame.mouse.get_pressed()[0]:
                 print("difficulty 3 selected")
@@ -104,7 +104,7 @@ def start_screen():
                 print(gs2.difficulty)
                 reset_vars()
         else:
-            draw_text("Difficulty 3 - May the gods of probability save you", gv.font, gv.violet, 100, 290)
+            draw_text("Difficulty 3 - May the gods of probability save you", gv.font, gv.violet, gv.screen_width // 2, 290)
 
         game_exit()
 
@@ -114,15 +114,17 @@ def start_screen():
 def options():
     print("options screen")
     while gs2.run_options:
+        # time_delta is for the drawing the sliders in real time
         time_delta = pygame.time.Clock().tick(60) / 1000.0
+        # getting the current value from the sliders
         slider_value = gv.slider2.get_current_value()
         pygame.display.set_caption("Evil Pong Options Menu")
         gv.screen.fill((36, 36, 36))
 
         # draw text on screen
-        draw_text("Music", gv.font, gv.violet, 270, 180)
-        draw_text("Sound", gv.font, gv.violet, 270, 250)
-        draw_text("Press ESC to return to main menu", gv.font, gv.light_violet, 160, 450)
+        draw_text("Music", gv.font, gv.violet, gv.screen_width // 2, 180)
+        draw_text("Sound", gv.font, gv.violet, gv.screen_width // 2, 250)
+        draw_text("Press ESC to return to main menu", gv.font, gv.light_violet, gv.screen_width // 2, 450)
 
         gv.manager.draw_ui(gv.screen)
 
@@ -136,6 +138,7 @@ def options():
             # get value from the slider
             gv.manager.process_events(event)
             gs2.volume = slider_value
+
             # loop for setting the volume of all the sounds in the "sounds" list
             for sound in gs2.sounds:
                 sound.set_volume(gs2.volume)
@@ -151,7 +154,7 @@ def scores():
 
         pygame.display.set_caption("Evil Pong Scores Menu")
         gv.screen.fill((36, 36, 36))
-        draw_text("Press ESC to return to main menu", gv.font, gv.light_violet, 160, 450)
+        draw_text("Press ESC to return to main menu", gv.font, gv.light_violet, gv.screen_width // 2, 450)
         try:
             with open("scores.json", "r") as scores:
                 data = json.load(scores)
@@ -186,12 +189,16 @@ pygame.display.set_caption("Evil Pong Main Menu")
 
 def draw_text(text, font, color, x, y):
     img = gv.font.render(text, True, color)
-    gv.screen.blit(img, (x, y))
+    text_rect = img.get_rect()
+    text_rect.center = (x, y)
+    gv.screen.blit(img, text_rect)
 
 
 def draw_large_text(text, font, color, x, y):
     img = gv.font2.render(text, True, color)
-    gv.screen.blit(img, (x, y))
+    text_rect = img.get_rect()
+    text_rect.center = (x, y)
+    gv.screen.blit(img, text_rect)
 
 
 def reset_vars():
@@ -218,53 +225,53 @@ def run2(game_paused=False):
         gs2.run_scores = True
         # check if the game is paused:
         if game_paused:
-            draw_text("Game paused, press O to continue", gv.font, gv.violet, 150, 220)
+            draw_text("Game paused, press O to continue", gv.font, gv.violet, gv.screen_width // 2, 220)
         else:
-            draw_large_text("EVIL PONG", gv.font2, gv.violet, 80, 20)
+            draw_large_text("EVIL PONG", gv.font2, gv.violet, gv.screen_width // 2, 80)
 
             # start button
             start_rect = pygame.Rect(260, 200, 80, 40)
             mouse_pos = pygame.mouse.get_pos()
             if start_rect.collidepoint(mouse_pos):
-                draw_text("Start", gv.font, gv.light_violet, 280, 200)
+                draw_text("Start", gv.font, gv.light_violet, gv.screen_width // 2, 200)
                 if pygame.mouse.get_pressed()[0]:
                     print("Start button pressed")
                     start_screen()
             else:
-                draw_text("Start", gv.font, gv.violet, 280, 200)
+                draw_text("Start", gv.font, gv.violet, gv.screen_width // 2, 200)
 
             # options button
             options_rect = pygame.Rect(260, 240, 100, 40)
 
             if options_rect.collidepoint(mouse_pos):
-                draw_text("Options", gv.font, gv.light_violet, 270, 240)
+                draw_text("Options", gv.font, gv.light_violet, gv.screen_width // 2, 240)
                 if pygame.mouse.get_pressed()[0]:
                     print("Options button pressed")
                     options()
             else:
-                draw_text("Options", gv.font, gv.violet, 270, 240)
+                draw_text("Options", gv.font, gv.violet, gv.screen_width // 2, 240)
 
             # scores button
             scores_rect = pygame.Rect(260, 280, 80, 40)
 
             if scores_rect.collidepoint(mouse_pos):
-                draw_text("Scores", gv.font, gv.light_violet, 270, 280)
+                draw_text("Scores", gv.font, gv.light_violet, gv.screen_width // 2, 280)
                 if pygame.mouse.get_pressed()[0]:
                     print("Scores button pressed")
                     scores()
             else:
-                draw_text("Scores", gv.font, gv.violet, 270, 280)
+                draw_text("Scores", gv.font, gv.violet, gv.screen_width // 2, 280)
 
             # exit button
             exit_rect = pygame.Rect(285, 320, 50, 40)
             if exit_rect.collidepoint(mouse_pos):
-                draw_text("Exit", gv.font, gv.light_violet, 285, 320)
+                draw_text("Exit", gv.font, gv.light_violet, gv.screen_width // 2, 320)
                 if pygame.mouse.get_pressed()[0]:
                     print("Exit button pressed")
                     sys.exit()
 
             else:
-                draw_text("Exit", gv.font, gv.violet, 285, 320)
+                draw_text("Exit", gv.font, gv.violet, gv.screen_width // 2, 320)
 
         for event in pygame.event.get():
 

@@ -55,13 +55,14 @@ class Paddle:
 
     def draw(self, color1):
         if gs.invisible:
+            # a random event that make the paddle almost invisible
             pygame.draw.rect(gmv.screen, gmv.bg, self.rect)
         else:
             pygame.draw.rect(gmv.screen, color1, self.rect)
             # make the paddle red (when losing)
             if not gmv.z:
                 pygame.draw.rect(gmv.screen, gmv.red, self.rect)
-            # a random event that make the paddle almost invisible
+
 
     def draw2(self):
         pygame.draw.rect(gmv.screen, gmv.light_grey, self.rect)
@@ -71,10 +72,21 @@ class Paddle:
     def update(self):
 
         if self.rect.height >= self.max_size:
-            self.size_direction = -1
+            self.size_direction = -3
         elif self.rect.height <= self.min_size:
             self.size_direction = 1
         self.rect.height += self.size_change * self.size_direction
+
+        middle_y = self.rect.centery
+
+        # Adjust the paddle height and y-coordinate based on the size change
+        self.rect.height += self.size_change * self.size_direction
+        if self.rect.top == gmv.margin:
+            self.rect.height -= self.size_change
+        if self.rect.bottom >= gmv.screen_height:
+            self.rect.height += self.size_change
+        self.rect.centery = middle_y
+
 
     def reset(self, x, y):
         self.x = x
@@ -84,7 +96,7 @@ class Paddle:
         self.speed = 5
         self.ai_speed = 5
         self.min_size = 10
-        self.max_size = 60
+        self.max_size = 100
         self.size_change = 1
         self.size_direction = 1
         if gs.ai_size:
@@ -95,7 +107,6 @@ class Paddle:
 class StaticPaddle(Paddle):
     def __init__(self, x, y):
         super().__init__(x, y)
-        from pygame import Rect
         self.rect = Rect(self.x, self.y, 8, 100)
 
 
@@ -236,13 +247,13 @@ class GameObjects:
     cpu2 = Paddle(25, gmv.screen_height // 2 - 20)
 
     # static paddles (walls):
-    static_paddle1 = StaticPaddle(300, gmv.screen_height // 10)
-    static_paddle2 = StaticPaddle(300, gmv.screen_height - 100)
+    static_paddle1 = StaticPaddle(gmv.screen_width // 2, gmv.screen_height // 10)
+    static_paddle2 = StaticPaddle(gmv.screen_width // 2, gmv.screen_height - 100)
     # static paddles 2 (more walls):
-    static_paddle3 = StaticPaddle(450, gmv.screen_height // 4)
-    static_paddle4 = StaticPaddle(450, gmv.screen_height - 160)
-    static_paddle5 = StaticPaddle(150, gmv.screen_height // 4)
-    static_paddle6 = StaticPaddle(150, gmv.screen_height - 160)
+    static_paddle3 = StaticPaddle(random.randrange(40,600), random.randrange(20,400))
+    static_paddle4 = StaticPaddle(random.randrange(40,600), random.randrange(20,400))
+    static_paddle5 = StaticPaddle(random.randrange(40,600), random.randrange(20,400))
+    static_paddle6 = StaticPaddle(random.randrange(40,600), random.randrange(20,400))
     # create balls:
     pong = Ball(gmv.screen_width - 60, gmv.screen_height // 2 + 15)
     pong2 = Ball(gmv.screen_width - 80, gmv.screen_height // 2 + 15)
@@ -259,7 +270,7 @@ def draw_board():
     # filling the screen with one color (gmv.bg)
     gmv.screen.fill(gmv.bg)
     # drawing a line in the middle of the screen
-    pygame.draw.aaline(gmv.screen, gmv.light_grey, (300, 500), (300, 50))
+    pygame.draw.aaline(gmv.screen, gmv.light_grey, (gv.screen_width // 2, 500), (gv.screen_width // 2, 50))
     # drawing a line in the upper part of the screen
     pygame.draw.line(gmv.screen, gmv.light_grey, (0, gmv.margin), (gmv.screen_width, gmv.margin))
 
@@ -272,7 +283,9 @@ def draw_text(text, font, text_col, x, y):
 
 def draw_text2(text, font, text_col, x, y, bg):
     img = font.render(text, True, text_col, bg)
-    gmv.screen.blit(img, (x, y))
+    text_rect = img.get_rect()
+    text_rect.center = (x, y)
+    gmv.screen.blit(img, text_rect)
 
 
 # random events generator
@@ -306,7 +319,10 @@ def objects_reset():
     game_object.pong2.reset(gmv.screen_width - 300, gmv.screen_height // 2 + 5)
     game_object.pong3.reset(gmv.screen_width - 300, gmv.screen_height // 2 + 5)
     game_object.pong4.reset(gmv.screen_width - 300, gmv.screen_height // 2 + 5)
-
+    game_object.static_paddle3.reset(random.randrange(40,600), random.randrange(50, 400))
+    game_object.static_paddle4.reset(random.randrange(40,600), random.randrange(50, 400))
+    game_object.static_paddle5.reset(random.randrange(40,600), random.randrange(50, 400))
+    game_object.static_paddle6.reset(random.randrange(40,600), random.randrange(50, 400))
 
 # function to write the scores to a file
 def write_score_to_json(player_score, cpu_score, difficulty):
@@ -337,13 +353,13 @@ while gs2.run:
     draw_board()
     draw_text('CPU: ' + str(gs2.cpu_score), gmv.font, gmv.light_grey, 30, 15)
     draw_text(gmv.p1 + str(gs2.player_score), gmv.font, gmv.light_grey, gmv.screen_width - 70, 15)
-    draw_text('Speed: ' + str(abs(game_object.pong.speed_x) - 2), gmv.font, gmv.light_grey, 310, 15)
-    draw_text('Rounds: ' + str(gs2.rounds), gmv.font, gmv.light_grey, 225, 15)
+    draw_text('Speed: ' + str(abs(game_object.pong.speed_x) - 2), gmv.font, gmv.light_grey, gv.screen_width - 320, 15)
+    draw_text('Rounds: ' + str(gs2.rounds), gmv.font, gmv.light_grey, gv.screen_width - 400, 15)
     # drawing the two puddles:
     game_object.player_paddle.draw(Paddle.color_1)
     game_object.cpu2.draw2()
     if gs2.random_event:
-        draw_text2('RANDOM EVENT', gmv.font, gmv.violet, 240, gmv.screen_height - 440, gmv.bg)
+        draw_text2('RANDOM EVENT', gmv.font, gmv.violet, gmv.screen_width // 2, gmv.screen_height - 450, gmv.bg)
     else:
         pass
 
@@ -565,14 +581,14 @@ while gs2.run:
 
     if not gmv.live_ball:
         if gmv.winner == 0:
-            draw_text2('CLICK ANYWHERE TO START', gmv.font2, gmv.deep_sky, 160, gmv.screen_height // 2 - 6, gmv.bg)
+            draw_text2('CLICK ANYWHERE TO START', gmv.font2, gmv.deep_sky, gmv.screen_width // 2, gmv.screen_height // 2, gmv.bg)
 
         if gmv.winner == 1:
             draw_text('YOU SCORED!', gmv.font, gmv.violet, 390, 15)
-            draw_text2('CLICK ANYWHERE TO START', gmv.font2, gmv.deep_sky, 160, gmv.screen_height // 2 - 6, gmv.bg)
+            draw_text2('CLICK ANYWHERE TO START', gmv.font2, gmv.deep_sky, gmv.screen_width // 2, gmv.screen_height // 2 , gmv.bg)
 
         if gmv.winner == -1:
             draw_text('CPU SCORED!', gmv.font, gmv.violet, 110, 15)
-            draw_text2('CLICK ANYWHERE TO START', gmv.font2, gmv.deep_sky, 160, gmv.screen_height // 2 - 6, gmv.bg)
+            draw_text2('CLICK ANYWHERE TO START', gmv.font2, gmv.deep_sky, gmv.screen_width // 2, gmv.screen_height // 2 , gmv.bg)
 
     pygame.display.update()

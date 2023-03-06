@@ -1,7 +1,6 @@
 # a class with the game variables that both the main.py and menu.py uses
 import pygame.mixer
 from pygame.mixer import Sound
-
 pygame.mixer.init()
 
 
