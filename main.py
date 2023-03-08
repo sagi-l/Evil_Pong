@@ -470,116 +470,116 @@ while gs2.run:
                 run2(game_paused == True)
                 print(game_paused)
 
-    if event.type == pygame.MOUSEBUTTONDOWN and not gmv.live_ball:
-        gmv.live_ball = True
+        if event.type == pygame.MOUSEBUTTONDOWN and not gmv.live_ball:
+            gmv.live_ball = True
 
-        print("difficulty: ", gs2.difficulty)
-        # resetting events triggers every time the game start
-        gs = GameState()
-        # resetting FPS after the FPS change random event
-        gmv.fps = 60
-        # difficulty selector
-        if gs2.difficulty == 1:
-            print(gs2.difficulty)
-            choice = None
-            gs2.random_event = False
-        elif gs2.difficulty == 2:
-
-            gs2.run = True
-            choice2 = random_gen(random_num)
-            print(f"first random: {choice2}")
-            if choice2 == [2] or choice2 == [4] or choice2 == [6] or choice2 == [10]:
-                choice = random_gen(random_num)
-            else:
+            print("difficulty: ", gs2.difficulty)
+            # resetting events triggers every time the game start
+            gs = GameState()
+            # resetting FPS after the FPS change random event
+            gmv.fps = 60
+            # difficulty selector
+            if gs2.difficulty == 1:
+                print(gs2.difficulty)
                 choice = None
                 gs2.random_event = False
-        elif gs2.difficulty == 3:
-            choice2 = random_gen(random_num)
-            print(f"first random: {choice2}")
-            if choice2 == [1] or choice2 == [3] or choice2 == [5] or choice2 == [7] \
-                    or choice2 == [9] or choice2 == [11] or choice2 == [12] or choice2 == [13] \
-                    or choice2 == [14] or choice2 == [15]:
-                choice = random_gen(random_num)
+            elif gs2.difficulty == 2:
 
-            else:
-                choice = None
-                gs2.random_event = False
+                gs2.run = True
+                choice2 = random_gen(random_num)
+                print(f"first random: {choice2}")
+                if choice2 == [2] or choice2 == [4] or choice2 == [6] or choice2 == [10]:
+                    choice = random_gen(random_num)
+                else:
+                    choice = None
+                    gs2.random_event = False
+            elif gs2.difficulty == 3:
+                choice2 = random_gen(random_num)
+                print(f"first random: {choice2}")
+                if choice2 == [1] or choice2 == [3] or choice2 == [5] or choice2 == [7] \
+                        or choice2 == [9] or choice2 == [11] or choice2 == [12] or choice2 == [13] \
+                        or choice2 == [14] or choice2 == [15]:
+                    choice = random_gen(random_num)
 
-                # random events
-        if choice == [1]:
-            gs2.random_event = True
-            gs.static = True
-            print(choice)
-        if choice == [2]:
-            gs2.random_event = True
-            gs.random_movement = True
-            print(choice)
-        if choice == [3]:
-            gs2.random_event = True
-            gs.invisible = True
-            print(choice)
-        if choice == [4]:
-            gs2.random_event = True
-            gs.ball_size2 = True
-            print(choice)
-        if choice == [5]:
-            gs2.random_event = True
-            gmv.fps = 40
-            gs.ball_size = True
-            print(choice)
-        if choice == [6]:
-            gs2.random_event = True
-            gs.ai_size = True
-            print(choice)
-        if choice == [7]:
-            gs2.random_event = True
-            gs.reverse_keys = True
-            print(choice)
-        if choice == [8]:
-            gs2.random_event = True
-            gs.many_balls = True
-            print(choice)
-        if choice == [9]:
-            gs2.random_event = True
-            gs.player_size = True
-            print(choice)
-        if choice == [10]:
-            gs2.random_event = True
-            gs.evil_score = True
-            print(choice)
-        if choice == [11]:
-            gs2.random_event = True
-            gs.reverse_roles = True
-            print(choice)
-        if choice == [12]:
-            gs2.random_event = True
-            gs.static2 = True
-            print(choice)
-        # mixed events:
-        if choice == [13]:
-            gs2.random_event = True
-            gs.invisible = True
-            gs.static2 = True
-            gs.ai_size = True
-            print(choice)
-        if choice == [14]:
-            gs2.random_event = True
-            gs.static = True
-            gs.static = True
-            gs.many_balls = True
-            print(choice)
-        if choice == [15]:
-            gs2.random_event = True
-            gs.ball_size2 = True
-            gs.reverse_keys = True
-            gs.reverse_roles = True
-            print("super evil")
-        objects_reset()
+                else:
+                    choice = None
+                    gs2.random_event = False
 
-        gmv.z = True
-        gmv.zz = True
+                    # random events
+            if choice == [1]:
+                gs2.random_event = True
+                gs.static = True
+                print(choice)
+            if choice == [2]:
+                gs2.random_event = True
+                gs.random_movement = True
+                print(choice)
+            if choice == [3]:
+                gs2.random_event = True
+                gs.invisible = True
+                print(choice)
+            if choice == [4]:
+                gs2.random_event = True
+                gs.ball_size2 = True
+                print(choice)
+            if choice == [5]:
+                gs2.random_event = True
+                gmv.fps = 40
+                gs.ball_size = True
+                print(choice)
+            if choice == [6]:
+                gs2.random_event = True
+                gs.ai_size = True
+                print(choice)
+            if choice == [7]:
+                gs2.random_event = True
+                gs.reverse_keys = True
+                print(choice)
+            if choice == [8]:
+                gs2.random_event = True
+                gs.many_balls = True
+                print(choice)
+            if choice == [9]:
+                gs2.random_event = True
+                gs.player_size = True
+                print(choice)
+            if choice == [10]:
+                gs2.random_event = True
+                gs.evil_score = True
+                print(choice)
+            if choice == [11]:
+                gs2.random_event = True
+                gs.reverse_roles = True
+                print(choice)
+            if choice == [12]:
+                gs2.random_event = True
+                gs.static2 = True
+                print(choice)
+            # mixed events:
+            if choice == [13]:
+                gs2.random_event = True
+                gs.invisible = True
+                gs.static2 = True
+                gs.ai_size = True
+                print(choice)
+            if choice == [14]:
+                gs2.random_event = True
+                gs.static = True
+                gs.static = True
+                gs.many_balls = True
+                print(choice)
+            if choice == [15]:
+                gs2.random_event = True
+                gs.ball_size2 = True
+                gs.reverse_keys = True
+                gs.reverse_roles = True
+                print("super evil")
+            objects_reset()
 
-    speed_increase()
+            gmv.z = True
+            gmv.zz = True
+
+        speed_increase()
 
     if not gmv.live_ball:
         if gmv.winner == 0:
