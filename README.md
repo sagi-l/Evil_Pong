@@ -3,7 +3,12 @@
 
 Evil Pong was created as an educational project with several goals in mind:
 - Learning and practicing Python and OOP 
-- Utilizing the PyGame package (and others), developing a full game with a menu system, scores, 3 difficulty levels, sound and music 
+- Utilizing the PyGame package (and others), developing a full game with:
+  - Menu system 
+  - Evil random events  
+  - 3 difficulty levels
+  - Scores  
+  - Sound and music 
 - Creating a classic game with a twist: Evil Pong uses a function which introduce random (mildly annoying) events to the game loop, hence "EVIL" 
 - Use this project as a basis for another DevOps project, and run this game in Docker (WIP)
 
