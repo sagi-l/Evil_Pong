@@ -3,8 +3,8 @@
 
 Evil Pong was created as an educational project with several goals in mind:
 - Learning and practicing Python and OOP 
-- Utilising PyGame pacakge (and others), devloping a full game with a menu system, scores, 3 difficulty levels, sound and music 
-- Creating a classic game with a twist: Evil Pong uses a mechanizem which introduce random (mildly annoying) events to the game loop, hene "EVIL" 
+- Utilizing the PyGame package (and others), developing a full game with a menu system, scores, 3 difficulty levels, sound and music 
+- Creating a classic game with a twist: Evil Pong uses a function which introduce random (mildly annoying) events to the game loop, hence "EVIL" 
 - Use this project as a basis for another DevOps project, and run this game in Docker (WIP)
 
 ## Installation:
@@ -13,11 +13,11 @@ Evil Pong was created as an educational project with several goals in mind:
 Clone or download the repository
 Install Python3 
 
-After you've downloaed the repository go to the dirctory and type in the terminal:
+After you've downloaded the repository go to the directory and type in the terminal:
 ```
 pip install -r requirements.txt
 ```
-You might need pip3 instaed of pip 
+You might need pip3 instead of pip 
 
 To start the game:
 ```
@@ -36,7 +36,7 @@ python main.py
 
 ## Future
 
-- Might add a standaline exe for windows 
+- Might add a standalone exe for windows 
 - Better refraction
 - More music for random events 
 - Docker containerization with GPU and sound support 
