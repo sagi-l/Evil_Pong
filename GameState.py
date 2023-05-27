@@ -49,7 +49,3 @@ class SecondGameState:
                            pygame.mixer.Sound('Assets/Cpu_paddle_WOB.wav'), pygame.mixer.Sound('Assets/Margin_WOB.wav'),
                            pygame.mixer.Sound('Assets/Bottom_WOB.wav'), pygame.mixer.Sound('Assets/WON_WOB.wav'),
                            pygame.mixer.Sound('Assets/WON_WOB.wav')]
-    """""
-    sounds list index: player_paddle: 0, Cpu_paddle: 1, Margin_1: 2, Bottom_1: 3, WON: 4, LOST: 5, Player_WOB: 6,
-    CPU_WOB: 7, Margin_WOB: 8, Bottom_WOB: 9, WON_WOB: 10, LOST_WOB: 11
-    """""

@@ -56,17 +56,17 @@ class Paddle:
     def draw(self, color1):
         if gs.invisible:
             # a random event that make the paddle almost invisible
-            pygame.draw.rect(gmv.screen, gmv.bg, self.rect)
+            pygame.draw.rect(gmv.screen, gmv.bg2, self.rect)
         else:
             pygame.draw.rect(gmv.screen, color1, self.rect)
             # make the paddle red (when losing)
-            if not gmv.z:
+            if not gmv.red_paddle:
                 pygame.draw.rect(gmv.screen, gmv.red, self.rect)
 
 
     def draw2(self):
         pygame.draw.rect(gmv.screen, gmv.light_grey, self.rect)
-        if not gmv.zz:
+        if not gmv.red_cpu_paddle:
             pygame.draw.rect(gmv.screen, gmv.red, self.rect)
 
     def update(self):
@@ -430,7 +430,7 @@ while gs2.run:
                         pygame.mixer.Sound.play(gs2.sounds[10])
                     gs2.player_score += 1
                     gs2.rounds += 1
-                    gmv.zz = False
+                    gmv.red_cpu_paddle = False
                 elif gmv.winner == -1:
                     if not gs.ball_size2 and not gs.ball_size:
                         pygame.mixer.Sound.play(gs2.sounds[5])
@@ -438,16 +438,16 @@ while gs2.run:
                         pygame.mixer.Sound.play(gs2.sounds[11])
                     gs2.cpu_score += 1
                     gs2.rounds += 1
-                    gmv.z = False
+                    gmv.red_paddle = False
             else:
                 if gmv.winner == -1:
                     gs2.player_score += 1
 
-                    gmv.z = False
+                    gmv.red_paddle = False
                 elif gmv.winner == 1:
                     gs2.cpu_score += 1
                     gs2.rounds += 1
-                    gmv.zz = False
+                    gmv.red_cpu_paddle = False
 
     # txt on screen while reset
 
@@ -576,8 +576,8 @@ while gs2.run:
                 print("super evil")
             objects_reset()
 
-            gmv.z = True
-            gmv.zz = True
+            gmv.red_paddle = True
+            gmv.red_cpu_paddle = True
 
         speed_increase()
 

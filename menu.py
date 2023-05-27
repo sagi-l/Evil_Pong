@@ -40,6 +40,7 @@ class GeneralMenuVariables:
 gs2 = SecondGameState()
 gv = GeneralMenuVariables()
 
+
 def game_exit():
     for event in pygame.event.get():
 
@@ -96,7 +97,8 @@ def start_screen():
             draw_text("Diffuculty 2 - Some random events", gv.font, gv.violet, gv.screen_width // 2, 222)
 
         if diff_3.collidepoint(mouse_pos):
-            draw_text("Difficulty 3 - May the gods of probability save you", gv.font, gv.light_violet, gv.screen_width // 2, 290)
+            draw_text("Difficulty 3 - May the gods of probability save you", gv.font, gv.light_violet,
+                      gv.screen_width // 2, 290)
 
             if pygame.mouse.get_pressed()[0]:
                 print("difficulty 3 selected")
@@ -104,7 +106,8 @@ def start_screen():
                 print(gs2.difficulty)
                 reset_vars()
         else:
-            draw_text("Difficulty 3 - May the gods of probability save you", gv.font, gv.violet, gv.screen_width // 2, 290)
+            draw_text("Difficulty 3 - May the gods of probability save you", gv.font, gv.violet, gv.screen_width // 2,
+                      290)
 
         game_exit()
 
@@ -117,7 +120,7 @@ def options():
         # time_delta is for the drawing the sliders in real time
         time_delta = pygame.time.Clock().tick(60) / 1000.0
         # getting the current value from the sliders
-        #sound slider
+        # sound slider
         slider_value = gv.slider2.get_current_value()
         # music slider
         slider_value2 = gv.slider.get_current_value()
@@ -181,8 +184,9 @@ def scores():
             difficulty = score["difficulty"]
             rounds = score["rounds"]
 
-            text = gv.font.render(f"{date}: Player: {player_score}, CPU: {cpu_score}, Difficulty: {difficulty}, Rounds: {rounds}", True,
-                                  (200, 80, 240))
+            text = gv.font.render(
+                f"{date}: Player: {player_score}, CPU: {cpu_score}, Difficulty: {difficulty}, Rounds: {rounds}", True,
+                (200, 80, 240))
             gv.screen.blit(text, (40, y))
             y += 50
 
@@ -214,6 +218,7 @@ def reset_vars():
     gs2.player_score = 0
     gs2.cpu_score = 0
     gs2.rounds = 0
+
 
 # Main game loop
 def run2(game_paused=False):

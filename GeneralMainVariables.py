@@ -16,8 +16,8 @@ class GeneralMainVariables:
     player_score = 0
 
     # paddle color change
-    z = True
-    zz = True
+    red_paddle = True
+    red_cpu_paddle = True
 
     # Game loop variables
     live_ball = False
